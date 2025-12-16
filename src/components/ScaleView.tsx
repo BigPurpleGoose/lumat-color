@@ -152,14 +152,13 @@ export const ScaleView: React.FC = () => {
             <Flex
               direction="column"
               align="center"
-              justify="center"
               gap="4"
               style={{
-                height: "100%",
                 width: "100%",
                 maxWidth: "80rem",
                 margin: "0 auto",
-                minHeight: "400px",
+                padding: "1rem",
+                boxSizing: "border-box",
               }}
             >
               {/* GradientVisualization now includes its own toolbar */}

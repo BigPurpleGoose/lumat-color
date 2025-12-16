@@ -49,8 +49,15 @@ export const AnalysisView: React.FC<AnalysisViewProps> = ({ scale }) => {
     useState<number>(8);
   const [highlightedRow, setHighlightedRow] = useState<number | null>(null);
 
-  const lightnessSteps = scale ? getLightnessSteps(scale) : [];
-  const opacitySteps = globalSettings.opacitySteps || [];
+  // Memoize computed values to stabilize useMemo dependencies
+  const lightnessSteps = useMemo(
+    () => (scale ? getLightnessSteps(scale) : []),
+    [scale, getLightnessSteps]
+  );
+  const opacitySteps = useMemo(
+    () => globalSettings.opacitySteps || [],
+    [globalSettings.opacitySteps]
+  );
   const bgLuminance = getLuminance(hexToSRGB(selectedBackground));
 
   // Generate colors using the scale's curves
@@ -708,10 +715,51 @@ export const AnalysisView: React.FC<AnalysisViewProps> = ({ scale }) => {
         </Box>
 
         {/* Minimum Opacity Calculator */}
-        <MinimumOpacityCalculator
-          color={generatedColors[selectedMinOpacityIndex]}
-          backgroundHex={selectedBackground}
-        />
+        <Box
+          style={{
+            backgroundColor: "#18181b",
+            borderRadius: "8px",
+            padding: "16px",
+            border: "1px solid #3f3f46",
+          }}
+        >
+          <Flex align="center" justify="between" mb="3">
+            <Text size="3" weight="bold">
+              Minimum Opacity Calculator
+            </Text>
+            <Flex align="center" gap="2">
+              <Text size="1" color="gray">
+                Reference:
+              </Text>
+              <select
+                value={selectedMinOpacityIndex}
+                onChange={(e) =>
+                  setSelectedMinOpacityIndex(Number(e.target.value))
+                }
+                style={{
+                  backgroundColor: "#27272a",
+                  color: "#a1a1aa",
+                  padding: "0.375rem 0.75rem",
+                  borderRadius: "0.375rem",
+                  fontSize: "0.875rem",
+                  border: "1px solid #3f3f46",
+                  outline: "none",
+                  cursor: "pointer",
+                }}
+              >
+                {lightnessSteps.map((step, idx) => (
+                  <option key={idx} value={idx}>
+                    #{idx + 1}: L{step} ({generatedColors[idx]?.hex || ""})
+                  </option>
+                ))}
+              </select>
+            </Flex>
+          </Flex>
+          <MinimumOpacityCalculator
+            color={generatedColors[selectedMinOpacityIndex]}
+            backgroundHex={selectedBackground}
+          />
+        </Box>
 
         {/* Detailed Analysis Table */}
         <Box>

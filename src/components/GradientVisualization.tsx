@@ -144,7 +144,16 @@ export const GradientVisualization: React.FC<GradientVisualizationProps> = memo(
         </Flex>
 
         {/* Visualization Area */}
-        <Box style={{ width: "100%", aspectRatio: "7/5", display: "flex" }}>
+        <Box
+          style={{
+            width: "100%",
+            aspectRatio: "7/5",
+            maxHeight: "600px",
+            display: "flex",
+            minHeight: 0,
+            overflow: "hidden",
+          }}
+        >
           {mode === "animated" && (
             <AnimatedGradient colors={colors} animate={shouldAnimate} />
           )}
