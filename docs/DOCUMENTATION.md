@@ -1,4 +1,4 @@
-# Lumat-Radix Documentation
+# Lumat-Color Documentation
 
 > Professional color scale designer using OKLCH color space with Display P3 gamut support
 
@@ -22,9 +22,9 @@
 
 ## Quick Start
 
-### What is Lumat-Radix?
+### What is Lumat-Color?
 
-Lumat-Radix is a professional color scale designer that generates perceptually uniform color scales using the OKLCH color space. It features advanced contrast modes, accessibility tools, and multiple export formats optimized for modern design systems.
+Lumat-Color is a professional color scale designer that generates perceptually uniform color scales using the OKLCH color space. It features advanced contrast modes, accessibility tools, and multiple export formats optimized for modern design systems.
 
 **Key Benefits:**
 
@@ -44,8 +44,8 @@ Lumat-Radix is a professional color scale designer that generates perceptually u
 **Getting Started:**
 
 ```bash
-# Clone or navigate to the lumat-radix directory
-cd lumat-radix
+# Clone or navigate to the lumat-color directory
+cd lumat-color
 
 # Install dependencies
 npm install
@@ -543,7 +543,7 @@ The application will open at `http://localhost:5173` (default Vite port).
 **Installing Generated Tokens:**
 
 ```bash
-# 1. Export CSS from Lumat-Radix
+# 1. Export CSS from Lumat-Color
 # 2. Save to your project: src/styles/colors.css
 
 /* colors.css */
@@ -588,7 +588,7 @@ npm install style-dictionary
 const StyleDictionary = require("style-dictionary");
 
 const sd = StyleDictionary.extend({
-  source: ["tokens/*.json"], // Lumat-Radix exports
+  source: ["tokens/*.json"], // Lumat-Color exports
   platforms: {
     css: {
       transformGroup: "css",
@@ -671,7 +671,7 @@ const DEFAULT_OPACITY_STEPS = [
 
 ```bash
 # Use CLI tools or scripts to automate token generation
-# Lumat-Radix is currently UI-based, but exports can be scripted
+# Lumat-Color is currently UI-based, but exports can be scripted
 
 # Example: Export from project JSON
 node scripts/export-tokens.js
@@ -886,7 +886,7 @@ Export Format: [CSS/JSON/Tokens]
 
 #### Colors Look Different in Figma
 
-**Problem**: Exported colors don't match Lumat-Radix display
+**Problem**: Exported colors don't match Lumat-Color display
 **Cause**: Color space mismatch (sRGB vs P3)
 **Solution**:
 

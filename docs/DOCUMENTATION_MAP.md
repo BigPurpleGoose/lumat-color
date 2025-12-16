@@ -1,4 +1,4 @@
-# Lumat-Radix Documentation Map
+# Lumat-Color Documentation Map
 
 > Navigation guide for all project documentation
 
@@ -9,7 +9,7 @@
 ## 📚 Documentation Structure
 
 ```
-lumat-radix/
+lumat-color/
 ├── 📖 README.md                    # Start here - Project overview
 ├── 📘 DOCUMENTATION.md             # Comprehensive guide (982 lines)
 ├── 📝 CHANGELOG.md                 # Version history (303 lines)
@@ -28,7 +28,7 @@ lumat-radix/
 
 **Start with:**
 
-- [README.md](README.md) - Understand what Lumat-Radix does (5 min)
+- [README.md](README.md) - Understand what Lumat-Color does (5 min)
 - [QUICK_REFERENCE.md](QUICK_REFERENCE.md) - OKLCH cheat sheet, accessibility thresholds (10 min)
 - [DOCUMENTATION.md](DOCUMENTATION.md#for-designers) - 5-minute primer, 30-minute deep dive (30 min)
 

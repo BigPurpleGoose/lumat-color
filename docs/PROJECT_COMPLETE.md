@@ -1,4 +1,4 @@
-# Lumat-Radix - Project Complete ✅
+# Lumat-Color - Project Complete ✅
 
 ## Overview
 
@@ -292,7 +292,7 @@ The rebuild maintains **100% backward compatibility**:
 ## 📁 Project Structure
 
 ```
-lumat-radix/
+lumat-color/
 ├── src/
 │   ├── components/
 │   │   ├── Sidebar.tsx              (211 lines)

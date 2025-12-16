@@ -1,6 +1,6 @@
-# Lumat-Radix Documentation
+# Lumat-Color Documentation
 
-This folder contains all documentation and reference materials for Lumat-Radix.
+This folder contains all documentation and reference materials for Lumat-Color.
 
 ## 📚 Documentation Index
 

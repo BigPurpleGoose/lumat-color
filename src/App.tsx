@@ -83,7 +83,7 @@ function App() {
         >
           <ControlPanel
             scale={activeScale}
-            onUpdate={(k: any, v: any) => updateScale(activeScale.id, k, v)}
+            onUpdate={(k, v) => updateScale(activeScale.id, k, v)}
           />
         </div>
       )}

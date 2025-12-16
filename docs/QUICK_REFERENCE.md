@@ -1,4 +1,4 @@
-# Lumat-Radix Quick Reference
+# Lumat-Color Quick Reference
 
 > One-page cheat sheet for rapid development
 
