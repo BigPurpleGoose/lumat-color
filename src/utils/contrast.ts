@@ -4,6 +4,7 @@ import { APCA_ALGORITHM_CONSTANTS, APCA_TARGETS as APCA_TARGETS_CENTRALIZED, WCA
 import { relativeLuminance, rgbToHex } from './colorConversions';
 
 // calcAPCA is available but not in TypeScript types
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const calcAPCA = (APCA as any).calcAPCA as (textColor: string, bgColor: string, places?: number) => number;
 
 /**

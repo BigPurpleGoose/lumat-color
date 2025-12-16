@@ -41,8 +41,12 @@ interface MatrixViewProps {
 }
 
 export const MatrixView: React.FC<MatrixViewProps> = ({ scale }) => {
-  const { globalSettings, selectedBackground, getLightnessSteps } =
-    useAppStore();
+  const {
+    globalSettings,
+    selectedBackground,
+    getLightnessSteps,
+    accessibilitySettings,
+  } = useAppStore();
   const [tooltipState, setTooltipState] = useState<TooltipState>({
     visible: false,
     content: null,
@@ -94,7 +98,12 @@ export const MatrixView: React.FC<MatrixViewProps> = ({ scale }) => {
   }, [generatedColors]);
 
   // Filter contrast pairs based on current threshold settings
+  // Respect global accessibility toggle - if disabled, show all cells
   const filteredPairs = useMemo(() => {
+    // If global indicators are off, don't filter - show all cells
+    if (!accessibilitySettings.enabled) return contrastMatrix;
+    
+    // If per-scale filtering is disabled, show all
     if (!scale.contrastThreshold?.enabled) return contrastMatrix;
 
     const filterOptions: ContrastFilterOptions = {
@@ -108,7 +117,7 @@ export const MatrixView: React.FC<MatrixViewProps> = ({ scale }) => {
     };
 
     return filterContrastPairs(contrastMatrix, filterOptions);
-  }, [contrastMatrix, scale.contrastThreshold]);
+  }, [contrastMatrix, scale.contrastThreshold, accessibilitySettings.enabled]);
 
   // Memoized handlers for performance
   const handleCellHover = useCallback(
