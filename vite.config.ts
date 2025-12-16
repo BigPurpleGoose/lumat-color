@@ -1,10 +1,19 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { writeFileSync } from 'fs'
 
 // https://vite.dev/config/
 export default defineConfig({
   base: '/lumat-color/',
-  plugins: [react()],
+  plugins: [
+    react(),
+    {
+      name: 'create-nojekyll',
+      closeBundle() {
+        writeFileSync('dist/.nojekyll', '')
+      }
+    }
+  ],
   build: {
     rollupOptions: {
       output: {
