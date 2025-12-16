@@ -4,6 +4,7 @@ import { writeFileSync } from 'fs'
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: '/lumat-color/',
   plugins: [
     react(),
     {
