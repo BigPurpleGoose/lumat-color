@@ -11,6 +11,7 @@
 import { converter, formatHex, clampChroma } from 'culori';
 import { getAPCA } from './contrast';
 import { GammaCorrection, PERFORMANCE_FLAGS } from './performanceOptimizations';
+import { rgbObjectToHex, luminanceToLightness } from './colorConversions';
 
 const toRgb = converter('rgb');
 
@@ -155,23 +156,16 @@ export const getLuminance = (color: RGBColor): number => {
 };
 
 /**
- * Convert sRGB object to hex
+ * Re-export rgbToHex for backward compatibility
+ * @deprecated Use rgbObjectToHex from './colorConversions' instead
  */
-export const rgbToHex = (color: RGBColor): string => {
-  return formatHex({ mode: 'rgb', r: color.r, g: color.g, b: color.b });
-};
+export const rgbToHex = rgbObjectToHex;
 
 /**
- * Convert perceived lightness (L*) back from luminance (Y)
- * CIE L* formula:
- * L* = 116 * Y^(1/3) - 16 for Y > 0.008856
- * L* = 903.3 * Y for Y <= 0.008856
+ * Re-export luminanceToLightness for backward compatibility
+ * @deprecated Import directly from './colorConversions' instead
  */
-export const luminanceToLightness = (luminance: number): number => {
-  return luminance > 0.008856
-    ? 116 * Math.pow(luminance, 1.0 / 3.0) - 16
-    : 903.3 * luminance;
-};
+export { luminanceToLightness } from './colorConversions';
 
 /**
  * Blend an OKLCH color onto a background with alpha using standard sRGB blending

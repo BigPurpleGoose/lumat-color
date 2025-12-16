@@ -25,8 +25,13 @@ export const ScaleView: React.FC = () => {
   const [gradientMode, setGradientMode] = useState<"linear" | "animated">(
     "linear"
   );
-  const { getActiveScale, viewMode, setViewMode, getLightnessSteps } =
-    useAppStore();
+  const {
+    getActiveScale,
+    viewMode,
+    setViewMode,
+    getLightnessSteps,
+    accessibilitySettings,
+  } = useAppStore();
 
   const activeScale = getActiveScale();
 
@@ -36,8 +41,8 @@ export const ScaleView: React.FC = () => {
     [activeScale, getLightnessSteps]
   );
 
-  // Compute Colors Memoized - recalculates when activeScale or lightnessSteps change
-  // This ensures colors regenerate when targetBackground or other properties change
+  // Compute Colors Memoized - recalculates when activeScale, lightnessSteps, or accessibilitySettings.targetBackground change
+  // This ensures colors regenerate when the global target background changes
   const generatedColors = useMemo(() => {
     if (!activeScale) return [];
     return lightnessSteps.map((lightnessStep) => {
@@ -51,14 +56,14 @@ export const ScaleView: React.FC = () => {
         {
           contrastMode: activeScale.contrastMode || "standard",
           calculateContrast: true,
-          targetBackground: activeScale.targetBackground || "black",
+          targetBackground: accessibilitySettings.targetBackground,
           targetLc: activeScale.apcaTargetLc,
           targetWcagRatio: activeScale.wcagTargetRatio,
           chromaCompensation: activeScale.chromaCompensation ?? true,
         }
       );
     });
-  }, [activeScale, lightnessSteps]);
+  }, [activeScale, lightnessSteps, accessibilitySettings.targetBackground]);
 
   if (!activeScale) {
     return (

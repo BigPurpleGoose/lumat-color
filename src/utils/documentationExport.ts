@@ -2,6 +2,7 @@ import { ColorResult, LIGHTNESS_STEPS } from './colorEngine';
 import { ColorScale } from '../types';
 import { calculateAPCA, calculateWCAG } from './contrast';
 import { converter } from 'culori';
+import { WCAG_THRESHOLDS } from './constants';
 
 export interface ContrastPair {
   foreground: string;
@@ -54,9 +55,9 @@ export function generateContrastMatrix(colors: ColorResult[]): ContrastPair[] {
 
       // Determine WCAG level
       let wcagLevel: 'AAA' | 'AA' | 'A' | 'Fail' = 'Fail';
-      if (wcagValue >= 7) wcagLevel = 'AAA';
-      else if (wcagValue >= 4.5) wcagLevel = 'AA';
-      else if (wcagValue >= 3) wcagLevel = 'A';
+      if (wcagValue >= WCAG_THRESHOLDS.AAA_NORMAL) wcagLevel = 'AAA';
+      else if (wcagValue >= WCAG_THRESHOLDS.AA_NORMAL) wcagLevel = 'AA';
+      else if (wcagValue >= WCAG_THRESHOLDS.AA_LARGE) wcagLevel = 'A';
 
       pairs.push({
         foreground: fg.hex,
@@ -141,13 +142,13 @@ export function generateUsageGuidelines(
     } else if (step >= 70) {
       recommendations.push('Good for disabled states and borders');
       recommendations.push('Suitable for secondary UI elements');
-      if (wcagValue && wcagValue >= 3) {
-        recommendations.push(`Meets WCAG ${wcagValue >= 4.5 ? 'AA' : 'A'} for large text on ${targetBg}`);
+      if (wcagValue && wcagValue >= WCAG_THRESHOLDS.AA_LARGE) {
+        recommendations.push(`Meets WCAG ${wcagValue >= WCAG_THRESHOLDS.AA_NORMAL ? 'AA' : 'A'} for large text on ${targetBg}`);
       }
     } else if (step >= 40) {
       recommendations.push('Ideal for interactive elements and icons');
       recommendations.push('Works well for primary buttons and links');
-      if (wcagValue && wcagValue >= 4.5) {
+      if (wcagValue && wcagValue >= WCAG_THRESHOLDS.AA_NORMAL) {
         recommendations.push(`AA compliant for text on ${targetBg} (${wcagValue.toFixed(1)}:1)`);
       }
       if (apcaValue && Math.abs(apcaValue) >= 60) {
@@ -156,7 +157,7 @@ export function generateUsageGuidelines(
     } else if (step >= 20) {
       recommendations.push('Strong contrast for primary text');
       recommendations.push('Excellent for headings and emphasis');
-      if (wcagValue && wcagValue >= 7) {
+      if (wcagValue && wcagValue >= WCAG_THRESHOLDS.AAA_NORMAL) {
         recommendations.push(`AAA compliant for body text on ${targetBg} (${wcagValue.toFixed(1)}:1)`);
       }
       if (apcaValue && Math.abs(apcaValue) >= 75) {
@@ -166,7 +167,7 @@ export function generateUsageGuidelines(
       recommendations.push('Maximum contrast for critical elements');
       recommendations.push('Use sparingly for high emphasis');
       warnings.push('May be too harsh for large text blocks');
-      if (wcagValue && wcagValue >= 7) {
+      if (wcagValue && wcagValue >= WCAG_THRESHOLDS.AAA_NORMAL) {
         recommendations.push(`Exceeds AAA standards (${wcagValue.toFixed(1)}:1)`);
       }
     }

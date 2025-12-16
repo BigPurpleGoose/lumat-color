@@ -24,10 +24,17 @@ import {
   Separator,
 } from "@radix-ui/themes";
 import { useAppStore } from "../store/useAppStore";
-import { CONTRAST_PRESET_OPTIONS } from "../utils/constants";
+import {
+  CONTRAST_PRESET_OPTIONS,
+  BACKGROUND_PRESETS,
+} from "../utils/constants";
 
 export const AccessibilityToolbar: React.FC = () => {
-  const { accessibilitySettings, updateAccessibilitySettings } = useAppStore();
+  const {
+    accessibilitySettings,
+    updateAccessibilitySettings,
+    setSelectedBackground,
+  } = useAppStore();
 
   // Handle preset selection
   const handlePresetChange = (presetKey: string) => {
@@ -60,6 +67,11 @@ export const AccessibilityToolbar: React.FC = () => {
   // Handle background selection
   const handleBackgroundChange = (bgName: string) => {
     updateAccessibilitySettings({ targetBackground: bgName });
+    // Sync with the selectedBackground used by other components
+    const preset = BACKGROUND_PRESETS.find((p) => p.name === bgName);
+    if (preset) {
+      setSelectedBackground(preset.color);
+    }
   };
 
   // Handle master indicators toggle

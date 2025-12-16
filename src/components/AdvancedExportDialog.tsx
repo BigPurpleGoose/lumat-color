@@ -34,7 +34,7 @@ import {
 } from "../utils/documentationExport";
 import { calculateAPCA, calculateWCAG } from "../utils/contrast";
 import { generateCSSWithFallbacks } from "../utils/cssExport";
-import { BACKGROUND_PRESETS } from "../utils/constants";
+import { BACKGROUND_PRESETS, WCAG_THRESHOLDS } from "../utils/constants";
 
 const toOklch = converter("oklch");
 
@@ -454,14 +454,14 @@ export const AdvancedExportDialog: React.FC<AdvancedExportDialogProps> = ({
           color2: otherColor.hex,
           wcag,
           apca,
-          isAccessible: wcag >= 4.5 && apca >= 60,
+          isAccessible: wcag >= WCAG_THRESHOLDS.AA_NORMAL && apca >= 60,
         };
       })
     );
 
     // Get top 5 unique accessible pairs for WCAG
     const topWCAGPairs = allPairs
-      .filter((p) => p.wcag >= 4.5)
+      .filter((p) => p.wcag >= WCAG_THRESHOLDS.AA_NORMAL)
       .sort((a, b) => a.wcag - b.wcag)
       .slice(0, 5);
 
@@ -475,7 +475,9 @@ export const AdvancedExportDialog: React.FC<AdvancedExportDialogProps> = ({
     const totalColors = colors.length;
     const accessibleWCAG = colors.filter((c) => {
       const colorOklch = { mode: "oklch" as const, l: c.L, c: c.C, h: c.H };
-      return calculateWCAG(colorOklch, bgColorOklch) >= 4.5;
+      return (
+        calculateWCAG(colorOklch, bgColorOklch) >= WCAG_THRESHOLDS.AA_NORMAL
+      );
     }).length;
     const accessibleAPCA = colors.filter((c) => {
       const colorOklch = { mode: "oklch" as const, l: c.L, c: c.C, h: c.H };
@@ -669,7 +671,7 @@ export const AdvancedExportDialog: React.FC<AdvancedExportDialogProps> = ({
         <div class="stat-value">${totalColors}</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">WCAG AA (4.5:1)</div>
+        <div class="stat-label">WCAG AA (${WCAG_THRESHOLDS.AA_NORMAL}:1)</div>
         <div class="stat-value">${accessibleWCAG} <span style="font-size: 1.25rem; color: #a1a1aa;">/ ${totalColors}</span></div>
       </div>
       <div class="stat-card">
@@ -870,7 +872,13 @@ ${colors
     const wcag = calculateWCAG(colorOklch, bgColorOklch);
     const apca = Math.abs(calculateAPCA(colorOklch, bgColorOklch));
     const level =
-      wcag >= 7 ? "AAA" : wcag >= 4.5 ? "AA" : wcag >= 3 ? "AA Large" : "Fail";
+      wcag >= WCAG_THRESHOLDS.AAA_NORMAL
+        ? "AAA"
+        : wcag >= WCAG_THRESHOLDS.AA_NORMAL
+        ? "AA"
+        : wcag >= WCAG_THRESHOLDS.AA_LARGE
+        ? "AA Large"
+        : "Fail";
     return `| ${step} | ${color.hex} | ${wcag.toFixed(2)}:1 | Lc ${apca.toFixed(
       0
     )} | ${level} |`;
@@ -908,7 +916,9 @@ Matrix visualization is best viewed in HTML or SVG format.
     const totalColors = colors.length;
     const accessibleColors = colors.filter((c) => {
       const colorOklch = { mode: "oklch" as const, l: c.L, c: c.C, h: c.H };
-      return calculateWCAG(colorOklch, bgColorOklch) >= 4.5;
+      return (
+        calculateWCAG(colorOklch, bgColorOklch) >= WCAG_THRESHOLDS.AA_NORMAL
+      );
     }).length;
     const apcaCompliant = colors.filter((c) => {
       const colorOklch = { mode: "oklch" as const, l: c.L, c: c.C, h: c.H };
@@ -932,7 +942,11 @@ Matrix visualization is best viewed in HTML or SVG format.
 
 ## Summary
 
-${accessibleColors} of ${totalColors} colors meet WCAG AA standards (4.5:1) for normal text. For large text (AA Large at 3:1), additional steps may be suitable.
+${accessibleColors} of ${totalColors} colors meet WCAG AA standards (${
+      WCAG_THRESHOLDS.AA_NORMAL
+    }:1) for normal text. For large text (AA Large at ${
+      WCAG_THRESHOLDS.AA_LARGE
+    }:1), additional steps may be suitable.
 
 ---
 *Generated with Luma on ${new Date().toLocaleDateString()}*

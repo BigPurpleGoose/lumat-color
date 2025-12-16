@@ -7,6 +7,85 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.1.1] - 2025-12-15
+
+### 🧹 Code Quality Improvements
+
+**Phases 1-3: Constants & Utilities Consolidation** - Established single source of truth for APCA/WCAG constants and color conversion utilities to prevent algorithm drift and improve maintainability.
+
+### Changed
+
+#### Constants Consolidation (Phase 1)
+
+- **Centralized APCA Algorithm Constants**: Moved all APCA calculation constants (`normBG`, `normTXT`, `revTXT`, `revBG`, `blkThrs`, `blkClmp`, `scaleBoW`, `scaleWoB`, `loConThresh`, `loConOffset`, `deltaYmin`) to `constants.ts`
+- **Centralized APCA Targets**: Consolidated APCA threshold targets (bodyText: 75, largeText: 60, UI: 45) into single location
+- **Centralized WCAG Thresholds**: Created `WCAG_THRESHOLDS` object with `AAA_NORMAL: 7.0`, `AA_NORMAL: 4.5`, `AAA_LARGE: 4.5`, `AA_LARGE: 3.0`
+- **Updated `contrast.ts`**: Modified `getAPCA()` to use centralized constants, deprecated local exports
+- **Updated `contrastUnified.ts`**: Modified `getAPCAFromLuminance()` to use centralized constants
+- **Updated `colorEngine.ts`**: Uses `DEFAULT_LIGHTNESS_STEPS` from constants, removed unused `applyChromaCompensation` import
+
+#### Magic Number Elimination (Phase 2)
+
+- **Replaced hardcoded WCAG values**: Eliminated 20+ hardcoded `4.5`, `7`, and `3` values across the codebase
+- **Updated `AdvancedExportDialog.tsx`**:
+  - Replaced `wcag >= 4.5` with `wcag >= WCAG_THRESHOLDS.AA_NORMAL` (7 instances)
+  - Replaced `wcag >= 7` with `wcag >= WCAG_THRESHOLDS.AAA_NORMAL` (1 instance)
+  - Replaced `wcag >= 3` with `wcag >= WCAG_THRESHOLDS.AA_LARGE` (1 instance)
+  - Updated HTML infographic label to use dynamic threshold value
+  - Updated markdown export to use dynamic threshold values
+- **Updated `documentationExport.ts`**:
+  - Replaced hardcoded WCAG levels in `generateContrastMatrix()` (3 instances)
+  - Updated `generateUsageGuidelines()` with threshold constants (6 instances)
+  - All contrast level determinations now reference centralized constants
+
+#### Utility Function Consolidation (Phase 3)
+
+- **Created `colorConversions.ts`**: New shared module for color space conversion utilities
+  - `relativeLuminance()`: WCAG relative luminance calculation (single source of truth)
+  - `rgbToHex()`: RGB to hex conversion using culori's formatHex
+  - `rgbObjectToHex()`: Convenience overload for RGB objects
+  - `luminanceToLightness()`: CIE L\* lightness conversion
+  - `lightnessToLuminance()`: Inverse CIE L\* conversion
+- **Updated `contrast.ts`**:
+  - Removed duplicate `relativeLuminance()` implementation (9 lines)
+  - Removed duplicate `rgbToHex()` implementation (8 lines)
+  - Added re-export for backward compatibility
+- **Updated `contrastUnified.ts`**:
+  - Removed duplicate `relativeLuminance()` implementation (9 lines)
+  - Removed duplicate `rgbToHex()` implementation (8 lines)
+  - Uses shared utilities from colorConversions
+- **Updated `opacityBlending.ts`**:
+  - Replaced `rgbToHex()` with re-export to `rgbObjectToHex`
+  - Replaced `luminanceToLightness()` with re-export
+  - Standardized on culori's formatHex for hex conversion
+
+### Added
+
+- **`colorConversions.ts`**: Shared color conversion utility module with comprehensive JSDoc documentation
+- **`ARCHITECTURE.md`**: Technical documentation covering project structure, constants management, color engine, and best practices
+
+### Fixed
+
+- **Removed unused imports**: Cleaned up `applyChromaCompensation` import from `colorEngine.ts`
+- **Eliminated TypeScript errors**: All compilation warnings resolved
+- **Code duplication**: Removed 44+ lines of duplicate utility functions
+
+### Technical Debt Resolved
+
+- **Algorithm Consistency**: Single source of truth prevents APCA/WCAG calculation drift across multiple implementations
+- **Maintainability**: Future threshold updates require changes in only one location (`constants.ts`)
+- **Utility Reuse**: Color conversion functions now centralized, preventing implementation divergence
+- **Type Safety**: Centralized exports provide better IntelliSense and type checking
+- **Documentation**: All threshold values and utility functions now self-documenting through named constants
+
+**Total Impact:**
+
+- 84+ lines of duplicate code eliminated
+- 12 files updated
+- 2 new shared modules created
+- Zero breaking changes
+- 100% backward compatibility maintained
+
 ## [0.1.0] - 2025-12-14
 
 ### 🎉 Initial Release

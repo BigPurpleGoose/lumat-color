@@ -6,9 +6,9 @@ import {
   clampChroma
 } from 'culori';
 import { calculateAPCA, calculateWCAG, validateContrast, relativeLuminance } from './contrast';
-import { BACKGROUND_PRESETS } from './constants';
+import { BACKGROUND_PRESETS, DEFAULT_LIGHTNESS_STEPS } from './constants';
 import { ColorCache, PERFORMANCE_FLAGS } from './performanceOptimizations';
-import { applyChromaCompensation, getMaxChromaForHue } from './chromaLimits';
+import { getMaxChromaForHue } from './chromaLimits';
 
 /**
  * Color Engine using OKLCH color space with Display P3 gamut mapping
@@ -71,8 +71,11 @@ export interface CurveParams {
   power: number;
 }
 
-// Standard Lightness Scale
-export const LIGHTNESS_STEPS = [98, 96, 93, 90, 85, 80, 70, 60, 48, 40, 32, 26, 20, 17, 14];
+/**
+ * Standard Lightness Scale
+ * @deprecated Use DEFAULT_LIGHTNESS_STEPS from constants.ts instead. Re-exported for backward compatibility.
+ */
+export const LIGHTNESS_STEPS = DEFAULT_LIGHTNESS_STEPS;
 
 // Culori converters
 const toP3 = converter('p3');

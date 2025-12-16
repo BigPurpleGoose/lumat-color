@@ -13,6 +13,8 @@
 import { converter } from 'culori';
 import * as APCA from 'apca-w3';
 import { blendOKLCHOnBackground } from './opacityBlending';
+import { APCA_ALGORITHM_CONSTANTS, APCA_TARGETS, WCAG_THRESHOLDS } from './constants';
+import { relativeLuminance, rgbToHex } from './colorConversions';
 
 // calcAPCA is available but not in TypeScript types
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -39,31 +41,6 @@ interface OpacityBlendOptions {
 }
 
 /**
- * Calculate relative luminance for WCAG contrast
- * Uses sRGB gamma correction per WCAG 2.1 specification
- */
-function relativeLuminance(r: number, g: number, b: number): number {
-  const [rs, gs, bs] = [r, g, b].map(val => {
-    val = Math.max(0, Math.min(1, val));
-    return val <= 0.03928 ? val / 12.92 : Math.pow((val + 0.055) / 1.055, 2.4);
-  });
-
-  return 0.2126 * rs + 0.7152 * gs + 0.0722 * bs;
-}
-
-/**
- * Convert RGB values to hex string
- */
-function rgbToHex(r: number, g: number, b: number): string {
-  const toHex = (val: number) => {
-    const clamped = Math.max(0, Math.min(255, Math.round(val * 255)));
-    return clamped.toString(16).padStart(2, '0');
-  };
-
-  return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
-}
-
-/**
  * Calculate WCAG 2.1 contrast ratio from two luminance values
  * @param lum1 - First luminance value (0-1)
  * @param lum2 - Second luminance value (0-1)
@@ -83,18 +60,19 @@ export function getContrastFromLuminance(lum1: number, lum2: number): number {
  * @returns APCA Lc value (with polarity, positive = light-on-dark)
  */
 export function getAPCAFromLuminance(txtY: number, bgY: number): number {
-  // APCA constants (from APCA-W3 specification)
-  const normBG = 0.56;
-  const normTXT = 0.57;
-  const revTXT = 0.62;
-  const revBG = 0.65;
-  const blkThrs = 0.022;
-  const blkClmp = 1.414;
-  const scaleBoW = 1.14;
-  const scaleWoB = 1.14;
-  const loConThresh = 0.1;
-  const loConOffset = 0.027;
-  const deltaYmin = 0.0005;
+  const {
+    normBG,
+    normTXT,
+    revTXT,
+    revBG,
+    blkThrs,
+    blkClmp,
+    scaleBoW,
+    scaleWoB,
+    loConThresh,
+    loConOffset,
+    deltaYmin,
+  } = APCA_ALGORITHM_CONSTANTS;
 
   // Soft clamp black levels
   bgY = bgY > blkThrs ? bgY : bgY + Math.pow(blkThrs - bgY, blkClmp);
@@ -274,23 +252,12 @@ export function getAPCACompliance(apcaLc: number): {
 
 /**
  * APCA target values for common use cases
+ * Re-exported from constants.ts for convenience
  */
-export const APCA_TARGETS = {
-  bodyText: 75,      // Standard body text
-  largeText: 60,     // Headlines, large UI text
-  smallText: 90,     // Small or critical text
-  placeholder: 45,   // Placeholder text, disabled states
-  decorative: 30,    // Non-text UI elements
-  uiElements: 45,    // Interactive UI components
-} as const;
+export { APCA_TARGETS };
 
 /**
  * WCAG minimum requirements
+ * Re-exported from constants.ts for convenience
  */
-export const WCAG_MINIMUMS = {
-  AAA_NORMAL: 7.0,   // AAA for normal text
-  AA_NORMAL: 4.5,    // AA for normal text (legal minimum)
-  AAA_LARGE: 4.5,    // AAA for large text (18pt+)
-  AA_LARGE: 3.0,     // AA for large text
-  UI_COMPONENT: 3.0, // Non-text UI components (SC 1.4.11)
-} as const;
+export { WCAG_THRESHOLDS as WCAG_MINIMUMS };

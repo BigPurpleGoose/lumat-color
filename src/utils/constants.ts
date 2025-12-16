@@ -183,3 +183,55 @@ export const CONTRAST_PRESET_OPTIONS: Array<{ key: ContrastPresetKey; preset: Co
   { key: 'APCA_GOLD', preset: CONTRAST_PRESETS.APCA_GOLD },
   { key: 'CUSTOM', preset: CONTRAST_PRESETS.CUSTOM },
 ];
+
+// =============================================================================
+// APCA Algorithm Constants
+// =============================================================================
+// Single source of truth for APCA contrast calculation constants
+// Used by contrast.ts, contrastUnified.ts, and opacityBlending.ts
+
+export const APCA_ALGORITHM_CONSTANTS = {
+  // Exponents for different polarity calculations
+  normBG: 0.56,      // Normal background exponent
+  normTXT: 0.57,     // Normal text exponent
+  revTXT: 0.62,      // Reverse text exponent (light on dark)
+  revBG: 0.65,       // Reverse background exponent
+
+  // Black level thresholds and clamping
+  blkThrs: 0.022,    // Black threshold
+  blkClmp: 1.414,    // Black clamp power
+
+  // Scale factors for different polarities
+  scaleBoW: 1.14,    // Scale for black-on-white
+  scaleWoB: 1.14,    // Scale for white-on-black
+
+  // Low contrast handling
+  loConThresh: 0.1,  // Low contrast threshold
+  loConOffset: 0.027, // Low contrast offset
+
+  // Minimum delta Y for valid contrast
+  deltaYmin: 0.0005,
+} as const;
+
+// APCA Target Values for Common Use Cases
+export const APCA_TARGETS = {
+  bodyText: 75,      // Standard body text
+  largeText: 60,     // Headlines, large UI text
+  smallText: 90,     // Small or critical text
+  placeholder: 45,   // Placeholder text, disabled states
+  decorative: 30,    // Non-text UI elements
+  uiElements: 45,    // Interactive UI components
+} as const;
+
+// =============================================================================
+// WCAG Thresholds
+// =============================================================================
+// Single source of truth for WCAG 2.1 minimum contrast ratios
+
+export const WCAG_THRESHOLDS = {
+  AAA_NORMAL: 7.0,   // AAA for normal text
+  AA_NORMAL: 4.5,    // AA for normal text (legal minimum in many jurisdictions)
+  AAA_LARGE: 4.5,    // AAA for large text (18pt+ or 14pt+ bold)
+  AA_LARGE: 3.0,     // AA for large text
+  UI_COMPONENT: 3.0, // Non-text UI components (SC 1.4.11)
+} as const;

@@ -13,13 +13,9 @@ import {
 } from "@radix-ui/themes";
 import * as Accordion from "@radix-ui/react-accordion";
 import { ChevronDownIcon, MagicWandIcon } from "@radix-ui/react-icons";
-import type { ColorScale, ContrastPresetKey } from "../types";
+import type { ColorScale } from "../types";
 import { CurveControls } from "./CurveControls";
-import {
-  CONTRAST_PRESETS,
-  NEUTRAL_PROFILES,
-  BACKGROUND_PRESETS,
-} from "../utils/constants";
+import { NEUTRAL_PROFILES } from "../utils/constants";
 import { useAppStore } from "../store/useAppStore";
 import { AUTO_FIX_PRESETS } from "../utils/autoFix";
 
@@ -34,7 +30,7 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
   onUpdate,
 }) => {
   const contrastMode = scale.contrastMode || "standard";
-  const { setSelectedBackground, getLightnessSteps } = useAppStore();
+  const { getLightnessSteps } = useAppStore();
 
   const handleAutoFix = (
     preset: "wcag-aa" | "wcag-aaa" | "apca-body" | "apca-heading"
@@ -412,53 +408,19 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
               </Box>
             )}
 
-            {/* Target Background */}
-            <Box>
-              <Text
-                size="1"
-                weight="medium"
-                mb="2"
-                style={{
-                  color: "#a1a1aa",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.05em",
-                }}
-              >
-                Target Background
-              </Text>
-              <Select.Root
-                value={scale.targetBackground || "canvas-bg"}
-                onValueChange={(value) => {
-                  const preset = BACKGROUND_PRESETS.find(
-                    (p) => p.name === value
-                  );
-                  onUpdate("targetBackground", value);
-                  if (preset) {
-                    setSelectedBackground(preset.color);
-                  }
-                }}
-              >
-                <Select.Trigger style={{ width: "100%" }} />
-                <Select.Content>
-                  {BACKGROUND_PRESETS.map((preset) => (
-                    <Select.Item key={preset.name} value={preset.name}>
-                      {preset.name} (L{preset.lightness})
-                    </Select.Item>
-                  ))}
-                </Select.Content>
-              </Select.Root>
-              <Text
-                size="1"
-                mt="2"
-                style={{
-                  color: "#a1a1aa",
-                  lineHeight: "1.4",
-                  fontSize: "10px",
-                }}
-              >
-                Used for contrast calculations and documentation backgrounds
-              </Text>
-            </Box>
+            {/* Target Background - Now Global */}
+            <Callout.Root size="1" color="gray" variant="soft">
+              <Callout.Text>
+                <Text size="1" style={{ color: "#a1a1aa" }}>
+                  Target background for contrast calculations is set globally in
+                  the{" "}
+                  <Text weight="bold" style={{ color: "#d4d4d8" }}>
+                    Accessibility Toolbar
+                  </Text>{" "}
+                  at the top of the page.
+                </Text>
+              </Callout.Text>
+            </Callout.Root>
           </Flex>
         </Box>
 
