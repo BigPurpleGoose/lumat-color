@@ -102,7 +102,7 @@ export const MatrixView: React.FC<MatrixViewProps> = ({ scale }) => {
   const filteredPairs = useMemo(() => {
     // If global indicators are off, don't filter - show all cells
     if (!accessibilitySettings.enabled) return contrastMatrix;
-    
+
     // If per-scale filtering is disabled, show all
     if (!scale.contrastThreshold?.enabled) return contrastMatrix;
 
