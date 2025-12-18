@@ -39,7 +39,7 @@ interface AnalysisViewProps {
   scale: ColorScale;
 }
 
-export const AnalysisView: React.FC<AnalysisViewProps> = ({ scale }) => {
+const AnalysisView: React.FC<AnalysisViewProps> = ({ scale }) => {
   const { selectedBackground, getLightnessSteps, globalSettings } =
     useAppStore();
   const [copied, setCopied] = useState(false);
@@ -1003,3 +1003,5 @@ export const AnalysisView: React.FC<AnalysisViewProps> = ({ scale }) => {
     </ScrollArea>
   );
 };
+
+export default AnalysisView;

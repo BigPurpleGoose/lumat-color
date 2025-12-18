@@ -175,7 +175,9 @@ export const MatrixView: React.FC<MatrixViewProps> = ({ scale }) => {
     setZoomLevel(1);
   }, []);
 
-  const contrastFilterEnabled = scale.contrastThreshold?.enabled || false;
+  const contrastFilterEnabled =
+    accessibilitySettings.enabled &&
+    (scale.contrastThreshold?.enabled || false);
   const contrastFilterType = scale.contrastThreshold?.useApca ? "apca" : "wcag";
   const contrastFilterThreshold =
     contrastFilterType === "apca"

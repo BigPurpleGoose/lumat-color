@@ -11,9 +11,7 @@ import type { ViewMode } from "../types";
 const MatrixView = lazy(() =>
   import("./MatrixView").then((m) => ({ default: m.MatrixView }))
 );
-const AnalysisView = lazy(() =>
-  import("./AnalysisView").then((m) => ({ default: m.AnalysisView }))
-);
+const AnalysisView = lazy(() => import("./AnalysisView"));
 const AdvancedExportDialog = lazy(() =>
   import("./AdvancedExportDialog").then((m) => ({
     default: m.AdvancedExportDialog,

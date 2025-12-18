@@ -318,7 +318,7 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
                 </Select.Content>
               </Select.Root>
               {contrastMode !== "standard" && (
-                <Callout.Root size="1" color="purple" variant="soft" mt="2">
+                <Callout.Root size="1" color="blue" variant="soft" mt="2">
                   <Callout.Text>{getModeDescription()}</Callout.Text>
                 </Callout.Root>
               )}
@@ -485,136 +485,6 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
                   <Text size="1" style={{ color: "#71717a", fontSize: "10px" }}>
                     Adjusts chroma based on hue for perceptual uniformity
                   </Text>
-                </Box>
-              </Flex>
-            </Accordion.Content>
-          </Accordion.Item>
-
-          {/* Accessibility */}
-          <Accordion.Item
-            value="accessibility"
-            style={{
-              border: "1px solid #3f3f46",
-              borderRadius: "8px",
-              overflow: "hidden",
-              backgroundColor: "#27272a",
-            }}
-          >
-            <Accordion.Trigger
-              style={{
-                all: "unset",
-                width: "100%",
-                padding: "12px",
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-              }}
-            >
-              <Flex align="center" gap="2">
-                <MagicWandIcon />
-                <Text size="2" weight="medium">
-                  Accessibility
-                </Text>
-                {scale.contrastThreshold?.enabled && (
-                  <Badge color="green" variant="soft" size="1">
-                    Indicators On
-                  </Badge>
-                )}
-              </Flex>
-              <ChevronDownIcon />
-            </Accordion.Trigger>
-            <Accordion.Content
-              style={{ padding: "12px", borderTop: "1px solid #3f3f46" }}
-            >
-              <Flex direction="column" gap="3">
-                {/* Quick Optimize */}
-                <Box>
-                  <Text size="2" weight="bold" mb="2" color="amber">
-                    Quick Optimize
-                  </Text>
-                  <Text
-                    size="2"
-                    mb="3"
-                    style={{ color: "#a1a1aa", lineHeight: "1.5" }}
-                  >
-                    Automatically optimize scale settings to meet accessibility
-                    standards.
-                  </Text>
-                  <Box
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: "1fr 1fr",
-                      gap: "8px",
-                    }}
-                  >
-                    <button
-                      onClick={() => handleAutoFix("wcag-aa")}
-                      style={{
-                        padding: "8px 12px",
-                        backgroundColor: "#6366f1",
-                        color: "white",
-                        fontSize: "12px",
-                        fontWeight: "500",
-                        borderRadius: "6px",
-                        border: "none",
-                        cursor: "pointer",
-                      }}
-                    >
-                      WCAG AA (4.5:1)
-                    </button>
-                    <button
-                      onClick={() => handleAutoFix("wcag-aaa")}
-                      style={{
-                        padding: "8px 12px",
-                        backgroundColor: "#22c55e",
-                        color: "white",
-                        fontSize: "12px",
-                        fontWeight: "500",
-                        borderRadius: "6px",
-                        border: "none",
-                        cursor: "pointer",
-                      }}
-                    >
-                      WCAG AAA (7:1)
-                    </button>
-                    <button
-                      onClick={() => handleAutoFix("apca-body")}
-                      style={{
-                        padding: "8px 12px",
-                        backgroundColor: "#6366f1",
-                        color: "white",
-                        fontSize: "12px",
-                        fontWeight: "500",
-                        borderRadius: "6px",
-                        border: "none",
-                        cursor: "pointer",
-                      }}
-                    >
-                      APCA Body (75 Lc)
-                    </button>
-                    <button
-                      onClick={() => handleAutoFix("apca-heading")}
-                      style={{
-                        padding: "8px 12px",
-                        backgroundColor: "#f97316",
-                        color: "white",
-                        fontSize: "12px",
-                        fontWeight: "500",
-                        borderRadius: "6px",
-                        border: "none",
-                        cursor: "pointer",
-                      }}
-                    >
-                      APCA Heading (90 Lc)
-                    </button>
-                  </Box>
-                  <Callout.Root size="1" color="amber" variant="soft" mt="3">
-                    <Callout.Text size="1">
-                      <strong>Note:</strong> Auto-fix may change contrast mode,
-                      chroma values, and enable target modes.
-                    </Callout.Text>
-                  </Callout.Root>
                 </Box>
               </Flex>
             </Accordion.Content>
