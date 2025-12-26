@@ -1,10 +1,10 @@
-import{d as B,c as O,L as $,W as A}from"./index-BFk0Joi4.js";import{c as R}from"./vendor-color-D1ETm4ty.js";function j(o){const n=[];for(let t=0;t<o.length;t++)for(let c=0;c<o.length;c++){if(t===c)continue;const r=o[t],a=o[c],i={mode:"oklch",l:r.L,c:r.C,h:r.H},u={mode:"oklch",l:a.L,c:a.C,h:a.H},g=B(i,u),s=O(i,u);let e="Fail";s>=A.AAA_NORMAL?e="AAA":s>=A.AA_NORMAL?e="AA":s>=A.AA_LARGE&&(e="A"),n.push({foreground:r.hex,background:a.hex,fgStep:$[t],bgStep:$[c],apca:Math.abs(g),wcag:s,apcaPasses:Math.abs(g)>=60,wcagLevel:e})}return n}function D(o,n){return!n.minAPCA&&!n.maxAPCA&&!n.minWCAG&&!n.maxWCAG?o:o.filter(t=>{if(n.useAPCA){const c=n.minAPCA===void 0||t.apca>=n.minAPCA,r=n.maxAPCA===void 0||t.apca<=n.maxAPCA;return c&&r}else{const c=n.minWCAG===void 0||t.wcag>=n.minWCAG,r=n.maxWCAG===void 0||t.wcag<=n.maxWCAG;return c&&r}})}function N(o,n){return o.map((t,c)=>{const r=$[c],a=[],i=[],u=[],g=t.targetBackground||n.targetBackground||"black",s=g==="white"?t.contrast?.apca.onWhite:g==="gray"?t.contrast?.apca.onGray:t.contrast?.apca.onBlack,e=g==="white"?t.contrast?.wcag.onWhite:g==="gray"?t.contrast?.wcag.onGray:t.contrast?.wcag.onBlack;return r>=90?(a.push("Excellent for backgrounds and subtle UI elements"),a.push("Use for card backgrounds, hover states"),(g==="white"||g==="gray")&&i.push(`Low contrast with ${g} backgrounds`)):r>=70?(a.push("Good for disabled states and borders"),a.push("Suitable for secondary UI elements"),e&&e>=A.AA_LARGE&&a.push(`Meets WCAG ${e>=A.AA_NORMAL?"AA":"A"} for large text on ${g}`)):r>=40?(a.push("Ideal for interactive elements and icons"),a.push("Works well for primary buttons and links"),e&&e>=A.AA_NORMAL&&a.push(`AA compliant for text on ${g} (${e.toFixed(1)}:1)`),s&&Math.abs(s)>=60&&a.push(`APCA Lc ${Math.abs(s).toFixed(0)} - suitable for body text`)):r>=20?(a.push("Strong contrast for primary text"),a.push("Excellent for headings and emphasis"),e&&e>=A.AAA_NORMAL&&a.push(`AAA compliant for body text on ${g} (${e.toFixed(1)}:1)`),s&&Math.abs(s)>=75&&a.push(`APCA Lc ${Math.abs(s).toFixed(0)} - excellent readability`)):(a.push("Maximum contrast for critical elements"),a.push("Use sparingly for high emphasis"),i.push("May be too harsh for large text blocks"),e&&e>=A.AAA_NORMAL&&a.push(`Exceeds AAA standards (${e.toFixed(1)}:1)`)),o.forEach((m,l)=>{if(c===l)return;Math.abs(r-$[l])>=60&&u.push($[l])}),{step:r,color:t.hex,recommendations:a,warnings:i,bestPairings:u.sort((m,l)=>l-m).slice(0,5)}})}function U(o,n,t,c){const r=n.map((e,m)=>{const l=$[m],d=Math.round(e.L*100),h=l>50?"#000":"#fff";return`
-      <div class="swatch-compact" style="background-color: ${e.hex}; color: ${h};">
-        <div class="swatch-step">${l}</div>
+import{L,d as O,c as R,W as v}from"./index-BxP5Krjh.js";import{c as D}from"./vendor-color-D1ETm4ty.js";function j(o,t=L){const r=[];for(let n=0;n<o.length;n++)for(let m=0;m<o.length;m++){if(n===m)continue;const l=o[n],a=o[m],i={mode:"oklch",l:l.L,c:l.C,h:l.H},w={mode:"oklch",l:a.L,c:a.C,h:a.H},f=O(i,w),s=R(i,w);let e="Fail";s>=v.AAA_NORMAL?e="AAA":s>=v.AA_NORMAL?e="AA":s>=v.AA_LARGE&&(e="A"),r.push({foreground:l.hex,background:a.hex,fgStep:t[n],bgStep:t[m],apca:Math.abs(f),wcag:s,apcaPasses:Math.abs(f)>=60,wcagLevel:e})}return r}function N(o,t){return!t.minAPCA&&!t.maxAPCA&&!t.minWCAG&&!t.maxWCAG?o:o.filter(r=>{if(t.useAPCA){const n=t.minAPCA===void 0||r.apca>=t.minAPCA,m=t.maxAPCA===void 0||r.apca<=t.maxAPCA;return n&&m}else{const n=t.minWCAG===void 0||r.wcag>=t.minWCAG,m=t.maxWCAG===void 0||r.wcag<=t.maxWCAG;return n&&m}})}function U(o,t,r=L){return o.map((n,m)=>{const l=r[m],a=[],i=[],w=[],f=n.targetBackground||t.targetBackground||"black",s=f==="white"?n.contrast?.apca.onWhite:f==="gray"?n.contrast?.apca.onGray:n.contrast?.apca.onBlack,e=f==="white"?n.contrast?.wcag.onWhite:f==="gray"?n.contrast?.wcag.onGray:n.contrast?.wcag.onBlack;return l>=90?(a.push("Excellent for backgrounds and subtle UI elements"),a.push("Use for card backgrounds, hover states"),(f==="white"||f==="gray")&&i.push(`Low contrast with ${f} backgrounds`)):l>=70?(a.push("Good for disabled states and borders"),a.push("Suitable for secondary UI elements"),e&&e>=v.AA_LARGE&&a.push(`Meets WCAG ${e>=v.AA_NORMAL?"AA":"A"} for large text on ${f}`)):l>=40?(a.push("Ideal for interactive elements and icons"),a.push("Works well for primary buttons and links"),e&&e>=v.AA_NORMAL&&a.push(`AA compliant for text on ${f} (${e.toFixed(1)}:1)`),s&&Math.abs(s)>=60&&a.push(`APCA Lc ${Math.abs(s).toFixed(0)} - suitable for body text`)):l>=20?(a.push("Strong contrast for primary text"),a.push("Excellent for headings and emphasis"),e&&e>=v.AAA_NORMAL&&a.push(`AAA compliant for body text on ${f} (${e.toFixed(1)}:1)`),s&&Math.abs(s)>=75&&a.push(`APCA Lc ${Math.abs(s).toFixed(0)} - excellent readability`)):(a.push("Maximum contrast for critical elements"),a.push("Use sparingly for high emphasis"),i.push("May be too harsh for large text blocks"),e&&e>=v.AAA_NORMAL&&a.push(`Exceeds AAA standards (${e.toFixed(1)}:1)`)),o.forEach((g,c)=>{if(m===c)return;Math.abs(l-r[c])>=60&&w.push(r[c])}),{step:l,color:n.hex,recommendations:a,warnings:i,bestPairings:w.sort((g,c)=>c-g).slice(0,5)}})}function I(o,t,r,n,m=L){const l=t.map((e,g)=>{const c=m[g],d=Math.round(e.L*100),u=c>50?"#000":"#fff";return`
+      <div class="swatch-compact" style="background-color: ${e.hex}; color: ${u};">
+        <div class="swatch-step">${c}</div>
         <div class="swatch-hex">${e.hex}</div>
         <div class="swatch-values">L${d} C${e.C.toFixed(2)} H${Math.round(e.H)}°</div>
       </div>
-    `}).join(""),i=[t[0],t[Math.floor(t.length/2)],t[t.length-1]].filter(Boolean).map(e=>`
+    `}).join(""),i=[r[0],r[Math.floor(r.length/2)],r[r.length-1]].filter(Boolean).map(e=>`
     <div class="guideline-compact">
       <div class="guideline-swatch" style="background-color: ${e.color};"></div>
       <div class="guideline-info">
@@ -13,7 +13,7 @@ import{d as B,c as O,L as $,W as A}from"./index-BFk0Joi4.js";import{c as R}from"
         <div class="guideline-pairs">Pairs: ${e.bestPairings.slice(0,3).join(", ")}</div>
       </div>
     </div>
-  `).join(""),u=[{label:"WCAG 3:1",type:"wcag",value:3,badge:"A"},{label:"WCAG 4.5:1",type:"wcag",value:4.5,badge:"AA"},{label:"APCA 45 Lc",type:"apca",value:45,badge:"45"},{label:"APCA 70 Lc",type:"apca",value:70,badge:"70"},{label:"APCA 90 Lc",type:"apca",value:90,badge:"90"}],g=e=>{const m=c.filter(d=>e.type==="wcag"?d.wcag>=e.value:d.apca>=e.value);return(e.type==="wcag"?m.sort((d,h)=>d.wcag-h.wcag):m.sort((d,h)=>d.apca-h.apca)).slice(0,5)},s=u.map(e=>{const m=g(e);return m.length===0?"":`
+  `).join(""),w=[{label:"WCAG 3:1",type:"wcag",value:3,badge:"A"},{label:"WCAG 4.5:1",type:"wcag",value:4.5,badge:"AA"},{label:"APCA 45 Lc",type:"apca",value:45,badge:"45"},{label:"APCA 70 Lc",type:"apca",value:70,badge:"70"},{label:"APCA 90 Lc",type:"apca",value:90,badge:"90"}],f=e=>{const g=n.filter(d=>e.type==="wcag"?d.wcag>=e.value:d.apca>=e.value);return(e.type==="wcag"?g.sort((d,u)=>d.wcag-u.wcag):g.sort((d,u)=>d.apca-u.apca)).slice(0,5)},s=w.map(e=>{const g=f(e);return g.length===0?"":`
       <div class="threshold-section">
         <h3>${e.label}</h3>
         <table class="contrast-table">
@@ -27,14 +27,14 @@ import{d as B,c as O,L as $,W as A}from"./index-BFk0Joi4.js";import{c as R}from"
             </tr>
           </thead>
           <tbody>
-            ${m.map(l=>`
+            ${g.map(c=>`
               <tr>
-                <td>${l.fgStep}</td>
-                <td>${l.bgStep}</td>
-                <td>${l.apca.toFixed(0)}</td>
-                <td>${l.wcag.toFixed(1)}</td>
+                <td>${c.fgStep}</td>
+                <td>${c.bgStep}</td>
+                <td>${c.apca.toFixed(0)}</td>
+                <td>${c.wcag.toFixed(1)}</td>
                 <td>
-                  <div class="preview" style="background-color: ${l.background}; color: ${l.foreground};">
+                  <div class="preview" style="background-color: ${c.background}; color: ${c.foreground};">
                     Aa
                   </div>
                 </td>
@@ -367,13 +367,13 @@ import{d as B,c as O,L as $,W as A}from"./index-BFk0Joi4.js";import{c as R}from"
         <dt>Contrast:</dt>
         <dd>${o.contrastMode||"standard"}</dd>
         <dt>Steps:</dt>
-        <dd>${n.length}</dd>
+        <dd>${t.length}</dd>
       </dl>
     </div>
 
     <h2>Color Swatches</h2>
     <div class="swatches-grid">
-      ${r}
+      ${l}
     </div>
 
     <div class="content-grid">
@@ -389,33 +389,33 @@ import{d as B,c as O,L as $,W as A}from"./index-BFk0Joi4.js";import{c as R}from"
     </div>
   </div>
 </body>
-</html>`}function V(o,n,t=[100,90,80,70,60,50,40,30,20,15,12,10,7,5,3,0]){const c=o.targetBackground||"white",r=c==="black",a=c==="gray",i=b=>{const p=$.indexOf(b);return p!==-1?n[p].hex:"#000000"},u=i(r?14:a?85:98),g=i(r?93:a?32:40),s=i(r?96:a?26:32),e=i(r?17:a?90:96),m=R("rgb"),l=(b,p)=>{const x=m({mode:"oklch",l:b.L,c:b.C,h:b.H});if(!x)return u;const C=Math.max(0,Math.min(255,Math.round((x.r||0)*255))),G=Math.max(0,Math.min(255,Math.round((x.g||0)*255))),P=Math.max(0,Math.min(255,Math.round((x.b||0)*255)));return`rgba(${C}, ${G}, ${P}, ${p/100})`},d=48,h=50,v=40,y=80,z=8,w=4,f=20,S=t.length*(d+w)-w,M=n.length*(d+w)-w,k=S+h+f*2,L=M+v+y+f*2,H=n.map((b,p)=>t.map((x,C)=>{const G=f+h+C*(d+w),P=y+v+p*(d+w),T=l(b,x);return`<rect x="${G}" y="${P}" width="${d}" height="${d}" fill="${T}" stroke="${e}" stroke-width="2" rx="${z}"/>`}).join(`
+</html>`}function V(o,t,r=[100,90,80,70,60,50,40,30,20,15,12,10,7,5,3,0],n=L){const m=o.targetBackground||"white",l=m==="black",a=m==="gray",i=h=>{if(t.length===0)return"#000000";const b=n.indexOf(h);if(b!==-1&&t[b])return t[b].hex;let p=0,$=Math.abs(n[0]-h);for(let y=1;y<n.length;y++){const k=Math.abs(n[y]-h);k<$&&($=k,p=y)}return t[p]?.hex||t[0]?.hex||"#000000"},w=i(l?14:a?85:98),f=i(l?93:a?32:40),s=i(l?96:a?26:32),e=i(l?17:a?90:96),g=D("rgb"),c=(h,b)=>{const p=g({mode:"oklch",l:h.L,c:h.C,h:h.H});if(!p)return w;const $=Math.max(0,Math.min(255,Math.round((p.r||0)*255))),y=Math.max(0,Math.min(255,Math.round((p.g||0)*255))),k=Math.max(0,Math.min(255,Math.round((p.b||0)*255)));return`rgba(${$}, ${y}, ${k}, ${b/100})`},d=48,u=50,M=40,C=80,S=8,A=4,x=20,H=r.length*(d+A)-A,G=t.length*(d+A)-A,P=H+u+x*2,z=G+M+C+x*2,W=t.map((h,b)=>r.map((p,$)=>{const y=x+u+$*(d+A),k=C+M+b*(d+A),B=c(h,p);return`<rect x="${y}" y="${k}" width="${d}" height="${d}" fill="${B}" stroke="${e}" stroke-width="2" rx="${S}"/>`}).join(`
 `)).join(`
-`),W=n.map((b,p)=>{const x=$[p],C=y+v+p*(d+w)+d/2;return`<text x="${f+h-10}" y="${C}" text-anchor="end" dominant-baseline="middle" font-size="12" fill="${s}" font-family="-apple-system, system-ui, sans-serif" font-weight="500">L${x}</text>`}).join(`
-`),F=t.map((b,p)=>`<text x="${f+h+p*(d+w)+d/2}" y="${y+v-15}" text-anchor="middle" font-size="11" fill="${s}" font-family="-apple-system, system-ui, sans-serif" font-weight="400">${b}%</text>`).join(`
+`),F=t.map((h,b)=>{const p=n[b],$=C+M+b*(d+A)+d/2;return`<text x="${x+u-10}" y="${$}" text-anchor="end" dominant-baseline="middle" font-size="12" fill="${s}" font-family="-apple-system, system-ui, sans-serif" font-weight="500">L${p}</text>`}).join(`
+`),T=r.map((h,b)=>`<text x="${x+u+b*(d+A)+d/2}" y="${C+M-15}" text-anchor="middle" font-size="11" fill="${s}" font-family="-apple-system, system-ui, sans-serif" font-weight="400">${h}%</text>`).join(`
 `);return`<?xml version="1.0" encoding="UTF-8"?>
-<svg width="${k}" height="${L}" xmlns="http://www.w3.org/2000/svg">
+<svg width="${P}" height="${z}" xmlns="http://www.w3.org/2000/svg">
   <!-- Background -->
-  <rect width="${k}" height="${L}" fill="${u}" rx="12"/>
+  <rect width="${P}" height="${z}" fill="${w}" rx="12"/>
 
   <!-- Header -->
-  <text x="${f}" y="35" font-size="22" font-weight="600" fill="${g}" font-family="-apple-system, system-ui, sans-serif">${o.name}</text>
-  <text x="${f}" y="55" font-size="13" fill="${s}" font-family="-apple-system, system-ui, sans-serif">Hue: ${o.hue}° | Chroma: ${o.manualChroma.toFixed(4)}</text>
+  <text x="${x}" y="35" font-size="22" font-weight="600" fill="${f}" font-family="-apple-system, system-ui, sans-serif">${o.name}</text>
+  <text x="${x}" y="55" font-size="13" fill="${s}" font-family="-apple-system, system-ui, sans-serif">Hue: ${o.hue}° | Chroma: ${o.manualChroma.toFixed(4)}</text>
 
   <!-- Axis Labels -->
-  <text x="${f+h+S/2}" y="${y-10}" text-anchor="middle" font-size="11" font-weight="600" fill="${s}" font-family="-apple-system, system-ui, sans-serif" letter-spacing="1.5">OPACITY STEPS →</text>
+  <text x="${x+u+H/2}" y="${C-10}" text-anchor="middle" font-size="11" font-weight="600" fill="${s}" font-family="-apple-system, system-ui, sans-serif" letter-spacing="1.5">OPACITY STEPS →</text>
 
-  <text x="${f+5}" y="${y+v+M/2}" text-anchor="middle" font-size="11" font-weight="600" fill="${s}" font-family="-apple-system, system-ui, sans-serif" letter-spacing="1.5" transform="rotate(-90, ${f+5}, ${y+v+M/2})">SOURCE L ↑</text>
+  <text x="${x+5}" y="${C+M+G/2}" text-anchor="middle" font-size="11" font-weight="600" fill="${s}" font-family="-apple-system, system-ui, sans-serif" letter-spacing="1.5" transform="rotate(-90, ${x+5}, ${C+M+G/2})">SOURCE L ↑</text>
 
   <!-- Column headers -->
-  ${F}
+  ${T}
 
   <!-- Row labels -->
-  ${W}
+  ${F}
 
   <!-- Grid cells -->
-  ${H}
+  ${W}
 
   <!-- Footer -->
-  <text x="${k-f}" y="${L-15}" text-anchor="end" font-size="10" fill="${s}" font-family="-apple-system, system-ui, sans-serif" opacity="0.6">Generated by Luma | ${new Date().toLocaleDateString()}</text>
-</svg>`}export{V as a,N as b,U as c,D as f,j as g};
+  <text x="${P-x}" y="${z-15}" text-anchor="end" font-size="10" fill="${s}" font-family="-apple-system, system-ui, sans-serif" opacity="0.6">Generated by Luma | ${new Date().toLocaleDateString()}</text>
+</svg>`}export{V as a,U as b,I as c,N as f,j as g};
