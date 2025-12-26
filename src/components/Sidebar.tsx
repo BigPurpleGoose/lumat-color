@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Flex,
   Box,
@@ -14,8 +14,10 @@ import {
   GearIcon,
   FileIcon,
   SymbolIcon,
+  Share2Icon,
 } from "@radix-ui/react-icons";
 import { useAppStore } from "../store/useAppStore";
+import { ProjectExportDialog } from "./ProjectExportDialog";
 
 interface SidebarProps {
   onOpenProjects: () => void;
@@ -34,6 +36,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
     removeScale,
     updateScale,
   } = useAppStore();
+
+  const [showProjectExport, setShowProjectExport] = useState(false);
 
   const project = getCurrentProject();
   const scales = project?.scales || [];
@@ -198,6 +202,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
           variant="soft"
           color="gray"
           style={{ width: "100%" }}
+          onClick={() => setShowProjectExport(true)}
+          disabled={!project || scales.length === 0}
+          title="Export all scales in this project"
+        >
+          <Share2Icon width={16} height={16} />
+          Export All Scales
+        </Button>
+        <Button
+          variant="soft"
+          color="gray"
+          style={{ width: "100%" }}
           onClick={onOpenGlobalSettings}
           title="Configure global lightness and opacity scales"
         >
@@ -205,6 +220,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
           Global Settings
         </Button>
       </Flex>
+
+      {/* Project Export Dialog */}
+      <ProjectExportDialog
+        isOpen={showProjectExport}
+        onClose={() => setShowProjectExport(false)}
+      />
     </Flex>
   );
 };

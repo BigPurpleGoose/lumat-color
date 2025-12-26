@@ -94,8 +94,8 @@ export const MatrixView: React.FC<MatrixViewProps> = ({ scale }) => {
 
   // Generate contrast matrix for documentation
   const contrastMatrix = useMemo(() => {
-    return generateContrastMatrix(generatedColors);
-  }, [generatedColors]);
+    return generateContrastMatrix(generatedColors, lightnessSteps);
+  }, [generatedColors, lightnessSteps]);
 
   // Filter contrast pairs based on current threshold settings
   // Respect global accessibility toggle - if disabled, show all cells

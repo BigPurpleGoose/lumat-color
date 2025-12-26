@@ -51,6 +51,7 @@ export interface Project {
   createdAt: number;
   updatedAt: number;
   scales: ColorScale[];
+  globalSettings?: GlobalSettings;  // Snapshot of global settings when project was saved
 }
 
 // Global settings shared across all projects

@@ -17,9 +17,11 @@ import {
   DownloadIcon,
   UploadIcon,
   FileIcon,
+  Share2Icon,
 } from "@radix-ui/react-icons";
 import { useAppStore } from "../store/useAppStore";
 import { Project } from "../types";
+import { ProjectExportDialog } from "./ProjectExportDialog";
 
 interface ProjectManagerProps {
   isOpen: boolean;
@@ -43,6 +45,7 @@ export const ProjectManager: React.FC<ProjectManagerProps> = ({
   const [showNewProjectInput, setShowNewProjectInput] = useState(false);
   const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState("");
+  const [showProjectExport, setShowProjectExport] = useState(false);
 
   const handleCreateProject = () => {
     if (newProjectName.trim()) {
@@ -66,7 +69,11 @@ export const ProjectManager: React.FC<ProjectManagerProps> = ({
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `${project.name.replace(/\s/g, "_")}_${Date.now()}.json`;
+    // Use timestamp in filename to ensure uniqueness
+    a.download = `${project.name.replace(
+      /\s/g,
+      "_"
+    )}_${new Date().getTime()}.json`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -90,12 +97,21 @@ export const ProjectManager: React.FC<ProjectManagerProps> = ({
             project.createdAt = Date.now();
             project.updatedAt = Date.now();
 
-            useAppStore.setState((state) => ({
-              projects: [...state.projects, project],
-              currentProjectId: project.id,
-              activeScaleId: project.scales[0]?.id || null,
-            }));
-          } catch (error) {
+            useAppStore.setState((state) => {
+              // Ensure imported project has global settings
+              if (!project.globalSettings) {
+                project.globalSettings = { ...state.globalSettings };
+              }
+
+              return {
+                projects: [...state.projects, project],
+                currentProjectId: project.id,
+                activeScaleId: project.scales[0]?.id || null,
+                // Load the imported project's global settings
+                globalSettings: project.globalSettings,
+              };
+            });
+          } catch {
             alert("Failed to import project. Invalid file format.");
           }
         };
@@ -125,7 +141,7 @@ export const ProjectManager: React.FC<ProjectManagerProps> = ({
         </Dialog.Description>
 
         {/* Actions */}
-        <Flex gap="2" mb="4">
+        <Flex gap="2" mb="4" wrap="wrap">
           <Button
             onClick={() => setShowNewProjectInput(true)}
             size="2"
@@ -135,6 +151,14 @@ export const ProjectManager: React.FC<ProjectManagerProps> = ({
           </Button>
           <Button onClick={handleImportProject} size="2" variant="soft">
             <UploadIcon /> Import
+          </Button>
+          <Button
+            onClick={() => setShowProjectExport(true)}
+            size="2"
+            variant="soft"
+            disabled={!currentProjectId}
+          >
+            <Share2Icon /> Export All Scales
           </Button>
         </Flex>
 
@@ -362,6 +386,12 @@ export const ProjectManager: React.FC<ProjectManagerProps> = ({
           </button>
         </Dialog.Close>
       </Dialog.Content>
+
+      {/* Project Export Dialog */}
+      <ProjectExportDialog
+        isOpen={showProjectExport}
+        onClose={() => setShowProjectExport(false)}
+      />
     </Dialog.Root>
   );
 };

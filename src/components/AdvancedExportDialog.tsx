@@ -813,7 +813,7 @@ ${colors
 `;
 
   const generateGuidelinesMarkdown = () => {
-    const guidelines = generateUsageGuidelines(colors, scale);
+    const guidelines = generateUsageGuidelines(colors, scale, lightnessSteps);
     return `# ${scale.name} - Usage Guidelines
 
 ${guidelines
@@ -1127,7 +1127,12 @@ ${accessibleColors} of ${totalColors} colors meet WCAG AA standards (${
 
       case "matrix":
         title += "Contrast Matrix";
-        bodyContent = generateColorMatrix(scale, colors);
+        bodyContent = generateColorMatrix(
+          scale,
+          colors,
+          undefined,
+          lightnessSteps
+        );
         break;
 
       case "code":
@@ -1157,7 +1162,8 @@ ${accessibleColors} of ${totalColors} colors meet WCAG AA standards (${
           scale,
           colors,
           guidelines,
-          contrastMatrix
+          contrastMatrix,
+          lightnessSteps
         );
     }
 
@@ -1361,7 +1367,7 @@ ${accessibleColors} of ${totalColors} colors meet WCAG AA standards (${
     // SVG export - only valid for Matrix and Swatches
     if (activeFormat === "svg") {
       if (previewMode === "matrix") {
-        return generateColorMatrix(scale, colors);
+        return generateColorMatrix(scale, colors, undefined, lightnessSteps);
       }
       if (previewMode === "swatches") {
         // Create SVG version of swatch gradient
@@ -1397,8 +1403,8 @@ ${accessibleColors} of ${totalColors} colors meet WCAG AA standards (${
         return generateSwatchInfographic();
       }
 
-      const contrastMatrix = generateContrastMatrix(colors);
-      const guidelines = generateUsageGuidelines(colors, scale);
+      const contrastMatrix = generateContrastMatrix(colors, lightnessSteps);
+      const guidelines = generateUsageGuidelines(colors, scale, lightnessSteps);
 
       // Report mode gets full documentation
       if (previewMode === "report") {
@@ -1406,7 +1412,8 @@ ${accessibleColors} of ${totalColors} colors meet WCAG AA standards (${
           scale,
           colors,
           guidelines,
-          contrastMatrix
+          contrastMatrix,
+          lightnessSteps
         );
       }
 
@@ -1584,7 +1591,11 @@ ${accessibleColors} of ${totalColors} colors meet WCAG AA standards (${
         );
 
       case "guidelines":
-        const guidelines = generateUsageGuidelines(colors, scale);
+        const guidelines = generateUsageGuidelines(
+          colors,
+          scale,
+          lightnessSteps
+        );
         return (
           <Flex direction="column" gap="3" p="3">
             {guidelines.map((guide, idx) => (
@@ -1877,7 +1888,12 @@ ${accessibleColors} of ${totalColors} colors meet WCAG AA standards (${
           <Box p="3">
             <div
               dangerouslySetInnerHTML={{
-                __html: generateColorMatrix(scale, colors),
+                __html: generateColorMatrix(
+                  scale,
+                  colors,
+                  undefined,
+                  lightnessSteps
+                ),
               }}
             />
           </Box>

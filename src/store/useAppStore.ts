@@ -21,7 +21,8 @@ const migrateScale = (scale: any): ColorScale => ({
 
 const migrateProject = (project: any): Project => ({
   ...project,
-  scales: project.scales.map(migrateScale)
+  scales: project.scales.map(migrateScale),
+  globalSettings: project.globalSettings || undefined  // Preserve saved settings or set undefined for old projects
 });
 
 interface AppState {
@@ -97,7 +98,8 @@ const createDefaultProject = (): Project => {
         targetBackground: 'black',
         apcaTolerance: 1.5,
       }
-    ]
+    ],
+    globalSettings: { ...DEFAULT_GLOBAL_SETTINGS }  // Include default global settings
   };
 };
 
@@ -146,7 +148,8 @@ export const useAppStore = create<AppState>()(
               targetBackground: 'black',
               apcaTolerance: 1.5,
             }
-          ]
+          ],
+          globalSettings: { ...get().globalSettings }  // Snapshot current global settings
         };
 
         set((state) => ({
@@ -163,18 +166,20 @@ export const useAppStore = create<AppState>()(
         if (project) {
           set({
             currentProjectId: projectId,
-            activeScaleId: project.scales[0]?.id || null
+            activeScaleId: project.scales[0]?.id || null,
+            // Restore project's global settings if they exist (otherwise keep current global settings)
+            globalSettings: project.globalSettings || get().globalSettings
           });
         }
       },
 
       saveCurrentProject: () => {
-        const { currentProjectId } = get();
+        const { currentProjectId, globalSettings } = get();
         if (currentProjectId) {
           set((state) => ({
             projects: state.projects.map(p =>
               p.id === currentProjectId
-                ? { ...p, updatedAt: Date.now() }
+                ? { ...p, updatedAt: Date.now(), globalSettings: { ...globalSettings } }
                 : p
             )
           }));
@@ -224,7 +229,7 @@ export const useAppStore = create<AppState>()(
         set((state) => ({
           projects: state.projects.map(p =>
             p.id === currentProjectId
-              ? { ...p, scales: [...p.scales, newScale], updatedAt: Date.now() }
+              ? { ...p, scales: [...p.scales, newScale], updatedAt: Date.now(), globalSettings: { ...state.globalSettings } }
               : p
           ),
           activeScaleId: newScale.id
@@ -247,7 +252,7 @@ export const useAppStore = create<AppState>()(
           return {
             projects: state.projects.map(p =>
               p.id === currentProjectId
-                ? { ...p, scales: newScales, updatedAt: Date.now() }
+                ? { ...p, scales: newScales, updatedAt: Date.now(), globalSettings: { ...state.globalSettings } }
                 : p
             ),
             activeScaleId: newActiveId
@@ -267,7 +272,8 @@ export const useAppStore = create<AppState>()(
                   scales: p.scales.map(s =>
                     s.id === scaleId ? { ...s, [key]: value } : s
                   ),
-                  updatedAt: Date.now()
+                  updatedAt: Date.now(),
+                  globalSettings: { ...state.globalSettings }  // Snapshot global settings on any scale update
                 }
               : p
           )
@@ -291,13 +297,36 @@ export const useAppStore = create<AppState>()(
 
       // Global Settings Actions
       updateGlobalSettings: (settings: Partial<GlobalSettings>) => {
-        set((state) => ({
-          globalSettings: { ...state.globalSettings, ...settings }
-        }));
+        const { currentProjectId } = get();
+        set((state) => {
+          const newGlobalSettings = { ...state.globalSettings, ...settings };
+          return {
+            globalSettings: newGlobalSettings,
+            // Also update the current project's settings snapshot
+            projects: currentProjectId
+              ? state.projects.map(p =>
+                  p.id === currentProjectId
+                    ? { ...p, globalSettings: { ...newGlobalSettings }, updatedAt: Date.now() }
+                    : p
+                )
+              : state.projects
+          };
+        });
       },
 
       resetGlobalSettings: () => {
-        set({ globalSettings: DEFAULT_GLOBAL_SETTINGS });
+        const { currentProjectId } = get();
+        set((state) => ({
+          globalSettings: DEFAULT_GLOBAL_SETTINGS,
+          // Also update the current project's settings snapshot
+          projects: currentProjectId
+            ? state.projects.map(p =>
+                p.id === currentProjectId
+                  ? { ...p, globalSettings: { ...DEFAULT_GLOBAL_SETTINGS }, updatedAt: Date.now() }
+                  : p
+              )
+            : state.projects
+        }));
       },
 
       // Accessibility Settings Actions
@@ -320,11 +349,17 @@ export const useAppStore = create<AppState>()(
           const migratedProject = migrateProject(projectData);
           migratedProject.id = Date.now().toString(); // New ID to avoid conflicts
           migratedProject.name = `${migratedProject.name} (Imported)`;
+          // Ensure imported project has global settings (use current if not in import)
+          if (!migratedProject.globalSettings) {
+            migratedProject.globalSettings = { ...get().globalSettings };
+          }
 
           set((state) => ({
             projects: [...state.projects, migratedProject],
             currentProjectId: migratedProject.id,
-            activeScaleId: migratedProject.scales[0]?.id || null
+            activeScaleId: migratedProject.scales[0]?.id || null,
+            // Load the imported project's global settings
+            globalSettings: migratedProject.globalSettings
           }));
 
           return { success: true, message: 'Project imported successfully' };

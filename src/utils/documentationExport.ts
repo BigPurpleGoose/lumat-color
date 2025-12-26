@@ -35,7 +35,10 @@ export interface UsageGuideline {
  * Generate a contrast matrix showing all color pair combinations
  * Calculates actual contrast between each foreground/background pair
  */
-export function generateContrastMatrix(colors: ColorResult[]): ContrastPair[] {
+export function generateContrastMatrix(
+  colors: ColorResult[],
+  actualLightnessSteps: number[] = LIGHTNESS_STEPS
+): ContrastPair[] {
   const pairs: ContrastPair[] = [];
 
   for (let i = 0; i < colors.length; i++) {
@@ -62,8 +65,8 @@ export function generateContrastMatrix(colors: ColorResult[]): ContrastPair[] {
       pairs.push({
         foreground: fg.hex,
         background: bg.hex,
-        fgStep: LIGHTNESS_STEPS[i],
-        bgStep: LIGHTNESS_STEPS[j],
+        fgStep: actualLightnessSteps[i],
+        bgStep: actualLightnessSteps[j],
         apca: Math.abs(apcaValue),
         wcag: wcagValue,
         apcaPasses: Math.abs(apcaValue) >= 60, // Common body text threshold
@@ -111,10 +114,11 @@ export function filterContrastPairs(
  */
 export function generateUsageGuidelines(
   colors: ColorResult[],
-  scale: ColorScale
+  scale: ColorScale,
+  actualLightnessSteps: number[] = LIGHTNESS_STEPS
 ): UsageGuideline[] {
   return colors.map((color, index) => {
-    const step = LIGHTNESS_STEPS[index];
+    const step = actualLightnessSteps[index];
     const recommendations: string[] = [];
     const warnings: string[] = [];
     const bestPairings: number[] = [];
@@ -176,11 +180,11 @@ export function generateUsageGuidelines(
     colors.forEach((_otherColor, otherIndex) => {
       if (index === otherIndex) return;
 
-      const lightnessDiff = Math.abs(step - LIGHTNESS_STEPS[otherIndex]);
+      const lightnessDiff = Math.abs(step - actualLightnessSteps[otherIndex]);
 
       // Good pairing if lightness difference is substantial
       if (lightnessDiff >= 60) {
-        bestPairings.push(LIGHTNESS_STEPS[otherIndex]);
+        bestPairings.push(actualLightnessSteps[otherIndex]);
       }
     });
 
@@ -201,11 +205,12 @@ export function generateHTMLDocumentation(
   scale: ColorScale,
   colors: ColorResult[],
   guidelines: UsageGuideline[],
-  contrastMatrix: ContrastPair[]
+  contrastMatrix: ContrastPair[],
+  actualLightnessSteps: number[] = LIGHTNESS_STEPS
 ): string {
   // Compact swatch display with just essential info
   const swatchesHTML = colors.map((color, index) => {
-    const step = LIGHTNESS_STEPS[index];
+    const step = actualLightnessSteps[index];
     const actualL = Math.round(color.L * 100);
     const textColor = step > 50 ? '#000' : '#fff';
 
@@ -657,17 +662,37 @@ export function generateHTMLDocumentation(
 export function generateColorMatrix(
   scale: ColorScale,
   colors: ColorResult[],
-  opacitySteps: number[] = [100, 90, 80, 70, 60, 50, 40, 30, 20, 15, 12, 10, 7, 5, 3, 0]
+  opacitySteps: number[] = [100, 90, 80, 70, 60, 50, 40, 30, 20, 15, 12, 10, 7, 5, 3, 0],
+  actualLightnessSteps: number[] = LIGHTNESS_STEPS
 ): string {
   // Use scale's target background to determine color scheme from generated scale colors
   const targetBg = scale.targetBackground || 'white';
   const isDark = targetBg === 'black';
   const isGray = targetBg === 'gray';
 
-  // Helper to get color by lightness step
-  const getColorByStep = (step: number): string => {
-    const index = LIGHTNESS_STEPS.indexOf(step);
-    return index !== -1 ? colors[index].hex : '#000000';
+  // Helper to get color by lightness step - finds closest available step
+  const getColorByStep = (targetStep: number): string => {
+    if (colors.length === 0) return '#000000';
+
+    // Try exact match first
+    const exactIndex = actualLightnessSteps.indexOf(targetStep);
+    if (exactIndex !== -1 && colors[exactIndex]) {
+      return colors[exactIndex].hex;
+    }
+
+    // Find closest step
+    let closestIndex = 0;
+    let minDiff = Math.abs(actualLightnessSteps[0] - targetStep);
+
+    for (let i = 1; i < actualLightnessSteps.length; i++) {
+      const diff = Math.abs(actualLightnessSteps[i] - targetStep);
+      if (diff < minDiff) {
+        minDiff = diff;
+        closestIndex = i;
+      }
+    }
+
+    return colors[closestIndex]?.hex || colors[0]?.hex || '#000000';
   };
 
   // Use colors from the generated scale based on target background
@@ -715,7 +740,7 @@ export function generateColorMatrix(
 
   // Generate row labels (lightness)
   const rowLabels = colors.map((_, rowIndex) => {
-    const lightnessStep = LIGHTNESS_STEPS[rowIndex];
+    const lightnessStep = actualLightnessSteps[rowIndex];
     const y = headerHeight + labelHeight + rowIndex * (cellSize + cellGap) + cellSize / 2;
     return `<text x="${padding + labelWidth - 10}" y="${y}" text-anchor="end" dominant-baseline="middle" font-size="12" fill="${labelColor}" font-family="-apple-system, system-ui, sans-serif" font-weight="500">L${lightnessStep}</text>`;
   }).join('\n');
@@ -773,10 +798,29 @@ export function generateHueMatrix(
   const firstScaleColors = allColors.get(scales[0]?.id);
   if (!firstScaleColors) return '';
 
-  // Helper to get color by lightness step from first scale
-  const getColorByStep = (step: number): string => {
-    const index = LIGHTNESS_STEPS.indexOf(step);
-    return index !== -1 ? firstScaleColors[index].hex : '#000000';
+  // Helper to get color by lightness step from first scale - finds closest available step
+  const getColorByStep = (targetStep: number): string => {
+    if (firstScaleColors.length === 0) return '#000000';
+
+    // Try exact match first
+    const exactIndex = LIGHTNESS_STEPS.indexOf(targetStep);
+    if (exactIndex !== -1 && firstScaleColors[exactIndex]) {
+      return firstScaleColors[exactIndex].hex;
+    }
+
+    // Find closest step
+    let closestIndex = 0;
+    let minDiff = Math.abs(LIGHTNESS_STEPS[0] - targetStep);
+
+    for (let i = 1; i < LIGHTNESS_STEPS.length; i++) {
+      const diff = Math.abs(LIGHTNESS_STEPS[i] - targetStep);
+      if (diff < minDiff) {
+        minDiff = diff;
+        closestIndex = i;
+      }
+    }
+
+    return firstScaleColors[closestIndex]?.hex || firstScaleColors[0]?.hex || '#000000';
   };
 
   // Use same color mapping as opacity matrix
@@ -858,19 +902,39 @@ export function generateHueMatrix(
 export function generateColorMatrixHTML(
   scale: ColorScale,
   colors: ColorResult[],
-  opacitySteps: number[] = [100, 90, 80, 70, 60, 50, 40, 30, 20, 15, 12, 10, 7, 5, 3, 0]
+  opacitySteps: number[] = [100, 90, 80, 70, 60, 50, 40, 30, 20, 15, 12, 10, 7, 5, 3, 0],
+  actualLightnessSteps: number[] = LIGHTNESS_STEPS
 ): string {
-  const svg = generateColorMatrix(scale, colors, opacitySteps);
+  const svg = generateColorMatrix(scale, colors, opacitySteps, actualLightnessSteps);
 
   // Use scale's target background for initial theme with colors from generated scale
   const targetBg = scale.targetBackground || 'white';
   const isDark = targetBg === 'black';
   const isGray = targetBg === 'gray';
 
-  // Helper to get color by lightness step
-  const getColorByStep = (step: number): string => {
-    const index = LIGHTNESS_STEPS.indexOf(step);
-    return index !== -1 ? colors[index].hex : '#000000';
+  // Helper to get color by lightness step - finds closest available step
+  const getColorByStep = (targetStep: number): string => {
+    if (colors.length === 0) return '#000000';
+
+    // Try exact match first
+    const exactIndex = actualLightnessSteps.indexOf(targetStep);
+    if (exactIndex !== -1 && colors[exactIndex]) {
+      return colors[exactIndex].hex;
+    }
+
+    // Find closest step
+    let closestIndex = 0;
+    let minDiff = Math.abs(actualLightnessSteps[0] - targetStep);
+
+    for (let i = 1; i < actualLightnessSteps.length; i++) {
+      const diff = Math.abs(actualLightnessSteps[i] - targetStep);
+      if (diff < minDiff) {
+        minDiff = diff;
+        closestIndex = i;
+      }
+    }
+
+    return colors[closestIndex]?.hex || colors[0]?.hex || '#000000';
   };
 
   // Use same color mapping as SVG export

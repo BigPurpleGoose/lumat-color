@@ -12,12 +12,11 @@ import {
   Switch,
 } from "@radix-ui/themes";
 import * as Accordion from "@radix-ui/react-accordion";
-import { ChevronDownIcon, MagicWandIcon } from "@radix-ui/react-icons";
+import { ChevronDownIcon } from "@radix-ui/react-icons";
 import type { ColorScale } from "../types";
 import { CurveControls } from "./CurveControls";
 import { NEUTRAL_PROFILES } from "../utils/constants";
 import { useAppStore } from "../store/useAppStore";
-import { AUTO_FIX_PRESETS } from "../utils/autoFix";
 
 interface ControlPanelProps {
   scale: ColorScale;
@@ -31,43 +30,6 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
 }) => {
   const contrastMode = scale.contrastMode || "standard";
   const { getLightnessSteps } = useAppStore();
-
-  const handleAutoFix = (
-    preset: "wcag-aa" | "wcag-aaa" | "apca-body" | "apca-heading"
-  ) => {
-    try {
-      const lightnessSteps = getLightnessSteps(scale);
-      if (!lightnessSteps || lightnessSteps.length === 0) {
-        console.error("Auto-fix failed: No lightness steps available");
-        return;
-      }
-
-      const result = AUTO_FIX_PRESETS[preset](scale, lightnessSteps);
-      if (!result || !result.scale) {
-        console.error("Auto-fix failed: Invalid result");
-        return;
-      }
-
-      let appliedChanges = 0;
-      Object.entries(result.scale).forEach(([key, value]) => {
-        if (value !== scale[key as keyof ColorScale]) {
-          onUpdate(key as keyof ColorScale, value);
-          appliedChanges++;
-        }
-      });
-
-      if (appliedChanges > 0) {
-        console.log(
-          `Auto-fix applied ${appliedChanges} changes:`,
-          result.improvements
-        );
-      } else {
-        console.log("Scale already optimized for", preset);
-      }
-    } catch (error) {
-      console.error("Auto-fix error:", error);
-    }
-  };
 
   const getModeDescription = () => {
     switch (contrastMode) {
