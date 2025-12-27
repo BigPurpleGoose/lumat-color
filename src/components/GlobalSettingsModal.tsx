@@ -21,7 +21,11 @@ import {
   InfoCircledIcon,
 } from "@radix-ui/react-icons";
 import { useAppStore } from "../store/useAppStore";
-import { DEFAULT_GLOBAL_SETTINGS } from "../utils/constants";
+import {
+  DEFAULT_GLOBAL_SETTINGS,
+  BACKGROUND_PRESETS,
+} from "../utils/constants";
+import { BackgroundPreset } from "../types";
 
 interface GlobalSettingsModalProps {
   isOpen: boolean;
@@ -48,6 +52,9 @@ export const GlobalSettingsModal: React.FC<GlobalSettingsModalProps> = ({
   const [blendMode, setBlendMode] = useState<"srgb" | "linear">(
     globalSettings.blendMode || "srgb"
   );
+  const [backgroundPresets, setBackgroundPresets] = useState<
+    BackgroundPreset[]
+  >(globalSettings.backgroundPresets || BACKGROUND_PRESETS);
 
   const handleSave = () => {
     updateGlobalSettings({
@@ -56,6 +63,7 @@ export const GlobalSettingsModal: React.FC<GlobalSettingsModalProps> = ({
       enforceGlobalLightness,
       allowPerScaleOverride,
       blendMode,
+      backgroundPresets,
     });
     onClose();
   };
@@ -72,6 +80,7 @@ export const GlobalSettingsModal: React.FC<GlobalSettingsModalProps> = ({
       setEnforceGlobalLightness(DEFAULT_GLOBAL_SETTINGS.enforceGlobalLightness);
       setAllowPerScaleOverride(DEFAULT_GLOBAL_SETTINGS.allowPerScaleOverride);
       setBlendMode(DEFAULT_GLOBAL_SETTINGS.blendMode);
+      setBackgroundPresets(BACKGROUND_PRESETS);
     }
   };
 
@@ -103,6 +112,29 @@ export const GlobalSettingsModal: React.FC<GlobalSettingsModalProps> = ({
     const newSteps = [...opacitySteps];
     newSteps[index] = Math.max(0, Math.min(100, value));
     setOpacitySteps(newSteps.sort((a, b) => b - a));
+  };
+
+  const addBackgroundPreset = () => {
+    const newPreset: BackgroundPreset = {
+      name: `custom-${Date.now()}`,
+      color: "#808080",
+      lightness: 50,
+    };
+    setBackgroundPresets([...backgroundPresets, newPreset]);
+  };
+
+  const removeBackgroundPreset = (index: number) => {
+    setBackgroundPresets(backgroundPresets.filter((_, i) => i !== index));
+  };
+
+  const updateBackgroundPreset = (
+    index: number,
+    field: keyof BackgroundPreset,
+    value: string | number
+  ) => {
+    const newPresets = [...backgroundPresets];
+    newPresets[index] = { ...newPresets[index], [field]: value };
+    setBackgroundPresets(newPresets);
   };
 
   return (
@@ -309,6 +341,112 @@ export const GlobalSettingsModal: React.FC<GlobalSettingsModalProps> = ({
                     : "Linear RGB (Scientific)"}
                 </strong>
               </Text>
+            </Box>
+
+            {/* Background Presets */}
+            <Box
+              p="4"
+              style={{
+                backgroundColor: "#18181b",
+                borderRadius: "8px",
+                border: "1px solid #3f3f46",
+              }}
+            >
+              <Flex justify="between" align="center" mb="4">
+                <Heading size="4">Background Presets</Heading>
+                <Button onClick={addBackgroundPreset} size="2" variant="soft">
+                  <PlusIcon /> Add Preset
+                </Button>
+              </Flex>
+
+              <Flex direction="column" gap="3" mb="3">
+                {backgroundPresets.map((preset, index) => (
+                  <Flex key={index} gap="2" align="center">
+                    <input
+                      type="text"
+                      value={preset.name}
+                      onChange={(e) =>
+                        updateBackgroundPreset(index, "name", e.target.value)
+                      }
+                      placeholder="Name"
+                      style={{
+                        width: "120px",
+                        padding: "6px 8px",
+                        backgroundColor: "#27272a",
+                        border: "1px solid #3f3f46",
+                        borderRadius: "6px",
+                        fontSize: "14px",
+                        color: "white",
+                      }}
+                    />
+                    <input
+                      type="color"
+                      value={preset.color}
+                      onChange={(e) =>
+                        updateBackgroundPreset(index, "color", e.target.value)
+                      }
+                      style={{
+                        width: "48px",
+                        height: "32px",
+                        padding: "2px",
+                        backgroundColor: "#27272a",
+                        border: "1px solid #3f3f46",
+                        borderRadius: "6px",
+                        cursor: "pointer",
+                      }}
+                    />
+                    <Flex align="center" gap="1" style={{ flex: 1 }}>
+                      <Text size="1" color="gray" style={{ width: "20px" }}>
+                        L
+                      </Text>
+                      <input
+                        type="number"
+                        min="0"
+                        max="100"
+                        value={preset.lightness}
+                        onChange={(e) =>
+                          updateBackgroundPreset(
+                            index,
+                            "lightness",
+                            Number(e.target.value)
+                          )
+                        }
+                        style={{
+                          width: "72px",
+                          padding: "6px 8px",
+                          backgroundColor: "#27272a",
+                          border: "1px solid #3f3f46",
+                          borderRadius: "6px",
+                          fontSize: "14px",
+                          color: "white",
+                          fontFamily: "monospace",
+                        }}
+                      />
+                    </Flex>
+                    <Button
+                      onClick={() => removeBackgroundPreset(index)}
+                      variant="ghost"
+                      color="red"
+                      size="1"
+                      title="Remove preset"
+                    >
+                      <TrashIcon />
+                    </Button>
+                  </Flex>
+                ))}
+              </Flex>
+
+              <Flex align="start" gap="2">
+                <InfoCircledIcon
+                  width="16"
+                  height="16"
+                  style={{ flexShrink: 0, marginTop: "2px", color: "#a1a1aa" }}
+                />
+                <Text size="1" color="gray">
+                  Define custom background presets for contrast testing. These
+                  are used throughout the app for accessibility validation.
+                </Text>
+              </Flex>
             </Box>
 
             {/* Lightness Steps */}

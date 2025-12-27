@@ -789,10 +789,10 @@ export function generateColorMatrix(
 export function generateHueMatrix(
   scales: ColorScale[],
   allColors: Map<string, ColorResult[]>,
-  targetBackground: string = 'canvas-bg'
+  targetBackground: string = 'white'
 ): string {
-  const isDark = targetBackground === 'black';
-  const isGray = targetBackground === 'gray';
+  const isDark = targetBackground === 'black' || targetBackground === 'contrast' || targetBackground === 'dark1' || targetBackground === 'dark2';
+  const isGray = targetBackground === 'gray' || targetBackground === 'light2';
 
   // Use first scale's colors for UI color references
   const firstScaleColors = allColors.get(scales[0]?.id);
@@ -1109,10 +1109,10 @@ export function generateColorMatrixHTML(
 export function generateHueMatrixHTML(
   scales: ColorScale[],
   allColors: Map<string, ColorResult[]>,
-  targetBackground: string = 'canvas-bg'
+  targetBackground: string = 'white'
 ): string {
   const svg = generateHueMatrix(scales, allColors, targetBackground);
-  const isDark = targetBackground === 'black';
+  const isDark = targetBackground === 'black' || targetBackground === 'contrast' || targetBackground === 'dark1' || targetBackground === 'dark2';
   const isGray = targetBackground === 'gray';
 
   // Use first scale's colors for UI color references

@@ -169,7 +169,7 @@ export const Swatch: React.FC<SwatchProps> = ({ color, step }) => {
               color.specificContrast?.apca ?? color.contrast.apca.onWhite;
             const wcagValue =
               color.specificContrast?.wcag ?? color.contrast.wcag.onWhite;
-            const bgLabel = color.targetBackground || "canvas-bg";
+            const bgLabel = color.targetBackground || "white";
 
             // Format WCAG with rounding indicators
             const formatWCAG = (value: number): string => {

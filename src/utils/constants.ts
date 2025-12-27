@@ -5,10 +5,10 @@
 import { GlobalSettings, BackgroundPreset, ContrastPreset, ContrastPresetKey, GrayscaleProfile, AccessibilitySettings } from '../types';
 
 // Default lightness scale (15 steps)
-export const DEFAULT_LIGHTNESS_STEPS = [98, 96, 93, 90, 85, 80, 70, 60, 48, 40, 32, 26, 20, 17, 14];
+export const DEFAULT_LIGHTNESS_STEPS = [98, 96, 93, 90, 85, 75, 62, 50, 44, 36, 30, 24, 18, 16, 12];
 
 // Default opacity scale (16 steps)
-export const DEFAULT_OPACITY_STEPS = [100, 90, 80, 70, 60, 50, 40, 30, 20, 15, 12, 10, 7, 5, 3, 0];
+export const DEFAULT_OPACITY_STEPS = [100, 94, 88, 80, 72, 64, 48, 32, 24, 12, 8, 4, 2, 0];
 
 // Default global settings
 export const DEFAULT_GLOBAL_SETTINGS: GlobalSettings = {
@@ -17,6 +17,7 @@ export const DEFAULT_GLOBAL_SETTINGS: GlobalSettings = {
   enforceGlobalLightness: true,
   allowPerScaleOverride: false,
   blendMode: 'srgb', // Default to CSS/Figma-compatible blending
+  backgroundPresets: undefined, // Will use BACKGROUND_PRESETS by default
 };
 
 // Default accessibility settings
@@ -26,7 +27,7 @@ export const DEFAULT_ACCESSIBILITY_SETTINGS: AccessibilitySettings = {
   minLc: 60,                  // APCA body text threshold
   minWcag: 4.5,               // WCAG AA normal text
   preset: 'APCA_BODY_TEXT',   // Default to body text preset
-  targetBackground: 'canvas-bg', // Default to white background
+  targetBackground: 'white',  // Default to white background
 };
 
 // Grayscale profiles for creating complementary neutral color scales
@@ -69,13 +70,15 @@ export const NEUTRAL_PROFILES: Record<string, GrayscaleProfile> = {
 };
 
 // Background presets for testing colors in context
+// These presets represent typical UI background colors for accessibility testing
+// Values align with common design system conventions and APCA recommendations
 export const BACKGROUND_PRESETS: BackgroundPreset[] = [
-  { name: 'canvas-bg', color: '#ffffff', lightness: 100 },
-  { name: 'canvas-bg-lv1', color: '#f7f8ff', lightness: 98 },
-  { name: 'canvas-bg-lv2', color: '#dcdde6', lightness: 90 },
-  { name: 'canvas-bg-lv2 (E)', color: '#23242b', lightness: 26 },
-  { name: 'canvas-bg-lv1 (E)', color: '#13141a', lightness: 20 },
-  { name: 'canvas-bg (E)', color: '#07070d', lightness: 14 },
+  { name: 'white', color: '#ffffff', lightness: 100 },      // Pure white
+  { name: 'light1', color: '#f8f8f8', lightness: 98 },   // Off-white
+  { name: 'light2', color: '#e8e8e8', lightness: 93 },   // Light gray
+  { name: 'dark2', color: '#211e22', lightness: 24 }, // Dark gray
+  { name: 'dark1', color: '#100d11', lightness: 16 }, // Darker gray
+  { name: 'contrast', color: '#09070a', lightness: 12 },   // Near black (emphasized)
 ];
 
 // Contrast filter presets

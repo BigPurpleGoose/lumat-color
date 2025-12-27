@@ -10,30 +10,41 @@ import { ColorScale } from '../types';
 
 /**
  * Map background preset names to contrast calculation keys.
- * BACKGROUND_PRESETS use descriptive names but contrast calculations
- * use simplified 'white'/'gray'/'black' keys.
+ * BACKGROUND_PRESETS use simplified names that map to contrast calculation keys.
  */
 function mapBackgroundToContrastKey(bgPresetName: string): 'white' | 'gray' | 'black' {
   // White backgrounds (L >= 95)
-  if (bgPresetName.includes('canvas-bg') && !bgPresetName.includes('lv')) {
-    return 'white'; // canvas-bg (L100)
-  }
-  if (bgPresetName.includes('canvas-bg-lv1') && !bgPresetName.includes('(E)')) {
-    return 'white'; // canvas-bg-lv1 (L98)
+  if (bgPresetName === 'white' || bgPresetName === 'light1') {
+    return 'white';
   }
 
   // Gray backgrounds (L 85-95)
-  if (bgPresetName.includes('canvas-bg-lv2') && !bgPresetName.includes('(E)')) {
-    return 'gray'; // canvas-bg-lv2 (L90)
+  if (bgPresetName === 'light2') {
+    return 'gray';
   }
 
   // Black/dark backgrounds (L < 30)
-  if (bgPresetName.includes('(E)')) {
-    return 'black'; // All emphasized variants (L14-26)
+  if (bgPresetName === 'dark1' || bgPresetName === 'dark2' || bgPresetName === 'contrast') {
+    return 'black';
+  }
+
+  // Legacy fallback mapping for old preset names
+  const legacyMap: Record<string, 'white' | 'gray' | 'black'> = {
+    'canvas-bg': 'white',
+    'canvas-bg-lv1': 'white',
+    'canvas-bg-lv2': 'gray',
+    'canvas-bg (E)': 'black',
+    'canvas-bg-lv1 (E)': 'black',
+    'canvas-bg-lv2 (E)': 'black',
+    'black': 'black',
+    'gray': 'gray',
+  };
+
+  if (legacyMap[bgPresetName]) {
+    return legacyMap[bgPresetName];
   }
 
   // Fallback: analyze preset name pattern for lightness hints
-  // Extract lightness value if present in name (e.g., "L20", "L90")
   const lightnessMatch = bgPresetName.match(/L(\d+)/i);
   if (lightnessMatch) {
     const lightness = parseInt(lightnessMatch[1], 10);
@@ -45,7 +56,7 @@ function mapBackgroundToContrastKey(bgPresetName: string): 'white' | 'gray' | 'b
   // Final fallback: check for common dark/light keywords
   if (bgPresetName.toLowerCase().includes('dark') ||
       bgPresetName.toLowerCase().includes('black') ||
-      bgPresetName.toLowerCase().includes('emphasized')) {
+      bgPresetName.toLowerCase().includes('contrast')) {
     return 'black';
   }
 
@@ -89,6 +100,7 @@ export interface ScaleContrastSummary {
 /**
  * Evaluate a single swatch against contrast threshold.
  * Pure function - uses existing contrast data from ColorResult.
+ * Prioritizes specificContrast (calculated against actual background) over generic contrast values.
  */
 export function evaluateSwatchContrast(
   color: ColorResult,
@@ -107,21 +119,30 @@ export function evaluateSwatchContrast(
     };
   }
 
-  // Map background preset name to contrast calculation key
-  const contrastKey = mapBackgroundToContrastKey(targetBg);
+  // Prefer specificContrast (calculated against actual selected background) over generic values
+  let apcaValue: number;
+  let wcagValue: number;
 
-  // Extract values based on mapped contrast key
-  const apcaValue = contrastKey === 'white'
-    ? color.contrast.apca.onWhite
-    : contrastKey === 'gray'
-    ? color.contrast.apca.onGray
-    : color.contrast.apca.onBlack;
+  if (color.specificContrast && color.targetBackground === targetBg) {
+    // Use precise contrast calculated against the actual selected background
+    apcaValue = color.specificContrast.apca;
+    wcagValue = color.specificContrast.wcag;
+  } else {
+    // Fallback to generic pre-calculated contrast values
+    const contrastKey = mapBackgroundToContrastKey(targetBg);
 
-  const wcagValue = contrastKey === 'white'
-    ? color.contrast.wcag.onWhite
-    : contrastKey === 'gray'
-    ? color.contrast.wcag.onGray
-    : color.contrast.wcag.onBlack;
+    apcaValue = contrastKey === 'white'
+      ? color.contrast.apca.onWhite
+      : contrastKey === 'gray'
+      ? color.contrast.apca.onGray
+      : color.contrast.apca.onBlack;
+
+    wcagValue = contrastKey === 'white'
+      ? color.contrast.wcag.onWhite
+      : contrastKey === 'gray'
+      ? color.contrast.wcag.onGray
+      : color.contrast.wcag.onBlack;
+  }
 
   // Determine pass/fail
   const passes = threshold.useApca

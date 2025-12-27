@@ -77,6 +77,35 @@ export const AdvancedExportDialog: React.FC<AdvancedExportDialogProps> = ({
   scale,
   colors,
 }) => {
+  const { globalSettings } = useAppStore();
+  const backgroundPresets =
+    globalSettings.backgroundPresets || BACKGROUND_PRESETS;
+
+  // Helper function to get background preset with legacy value mapping
+  const getBackgroundPreset = (targetBgName?: string) => {
+    if (!targetBgName) return backgroundPresets[0]; // Default to first preset
+
+    // Try direct match first
+    let preset = backgroundPresets.find((p) => p.name === targetBgName);
+
+    // Fallback mapping for legacy targetBackground values
+    if (!preset) {
+      const legacyMap: Record<string, string> = {
+        "canvas-bg": "white",
+        "canvas-bg-lv1": "light1",
+        "canvas-bg-lv2": "light2",
+        "canvas-bg (E2)": "dark1",
+        "canvas-bg (E)": "contrast",
+      };
+      const mappedName = legacyMap[targetBgName as keyof typeof legacyMap];
+      if (mappedName) {
+        preset = backgroundPresets.find((p) => p.name === mappedName);
+      }
+    }
+
+    return preset || backgroundPresets[0]; // Fallback to first preset
+  };
+
   const [activeFormat, setActiveFormat] = useState<ExportFormat>("html");
   const [previewMode, setPreviewMode] = useState<PreviewMode>("swatches");
   const [includeMetadata, setIncludeMetadata] = useState(true);
@@ -134,16 +163,17 @@ export const AdvancedExportDialog: React.FC<AdvancedExportDialogProps> = ({
 
   // Get background based on scale's targetBackground
   const bg = useMemo(() => {
-    const preset = BACKGROUND_PRESETS.find(
-      (p) => p.name === scale.targetBackground
-    );
-    return preset ? preset.color : "#FFFFFF";
+    const preset = getBackgroundPreset(scale.targetBackground);
+    return preset;
   }, [scale.targetBackground]);
 
-  // Convert background to OKLCH
+  // Convert background to OKLCH using preset lightness for accuracy
   const bgColor = useMemo(() => {
-    const bgOklch = toOklch(bg as any);
-    if (!bgOklch) return { mode: "oklch" as const, l: 1, c: 0, h: 0 };
+    const bgOklch = toOklch(bg.color as any);
+    if (!bgOklch) {
+      // Fallback: use preset lightness directly
+      return { mode: "oklch" as const, l: bg.lightness / 100, c: 0, h: 0 };
+    }
     return {
       mode: "oklch" as const,
       l: bgOklch.l,
@@ -286,7 +316,7 @@ export const AdvancedExportDialog: React.FC<AdvancedExportDialogProps> = ({
       "Rounding Note",
     ].join(",");
 
-    const bgOklch = toOklch(bg as any);
+    const bgOklch = toOklch(bg.color as any);
     if (!bgOklch) return "Error converting background color";
 
     const formatWCAGWithIndicator = (
@@ -412,11 +442,9 @@ export const AdvancedExportDialog: React.FC<AdvancedExportDialogProps> = ({
   };
 
   const generateSwatchInfographic = () => {
-    const bg =
-      BACKGROUND_PRESETS.find(
-        (preset) => preset.name === scale.targetBackground
-      )?.color || "#ffffff";
-    const bgOklch = toOklch(bg as any);
+    const preset = getBackgroundPreset(scale.targetBackground);
+    const bgColor = preset.color;
+    const bgOklch = toOklch(bgColor as any);
     const bgColorOklch = bgOklch
       ? {
           mode: "oklch" as const,
@@ -842,11 +870,9 @@ ${guide.warnings.map((warn: string) => `- ${warn}`).join("\n")}`
   };
 
   const generateContrastMarkdown = () => {
-    const bg =
-      BACKGROUND_PRESETS.find(
-        (preset) => preset.name === scale.targetBackground
-      )?.color || "#ffffff";
-    const bgOklch = toOklch(bg as any);
+    const preset = getBackgroundPreset(scale.targetBackground);
+    const bgColor = preset.color;
+    const bgOklch = toOklch(bgColor as any);
     const bgColorOklch = bgOklch
       ? {
           mode: "oklch" as const,
@@ -899,11 +925,9 @@ Matrix visualization is best viewed in HTML or SVG format.
 `;
 
   const generateReportMarkdown = () => {
-    const bg =
-      BACKGROUND_PRESETS.find(
-        (preset) => preset.name === scale.targetBackground
-      )?.color || "#ffffff";
-    const bgOklch = toOklch(bg as any);
+    const preset = getBackgroundPreset(scale.targetBackground);
+    const bgColor = preset.color;
+    const bgOklch = toOklch(bgColor as any);
     const bgColorOklch = bgOklch
       ? {
           mode: "oklch" as const,
@@ -1038,11 +1062,9 @@ ${accessibleColors} of ${totalColors} colors meet WCAG AA standards (${
 
       case "contrast":
         title += "Contrast Analysis";
-        const bg =
-          BACKGROUND_PRESETS.find(
-            (preset) => preset.name === scale.targetBackground
-          )?.color || "#ffffff";
-        const bgOklch = toOklch(bg as any);
+        const preset = getBackgroundPreset(scale.targetBackground);
+        const bgColorHex = preset.color;
+        const bgOklch = toOklch(bgColorHex as any);
         const bgColorOklch = bgOklch
           ? {
               mode: "oklch" as const,
@@ -1844,7 +1866,7 @@ ${accessibleColors} of ${totalColors} colors meet WCAG AA standards (${
                           style={{
                             width: "24px",
                             height: "24px",
-                            backgroundColor: bg,
+                            backgroundColor: bg.color,
                             borderRadius: "4px",
                             border: "1px solid rgba(0,0,0,0.1)",
                           }}

@@ -125,9 +125,9 @@ export function calculateWCAG(foreground: OklchColor, background: OklchColor): n
  * Validate contrast against multiple backgrounds
  */
 export function validateContrast(color: OklchColor): ContrastResult {
-  const black: OklchColor = { mode: 'oklch', l: 0.14, c: 0, h: 0 }; // Lv0 Emphasized
-  const white: OklchColor = { mode: 'oklch', l: 1, c: 0, h: 0 }; // Lv0 Base
-  const gray: OklchColor = { mode: 'oklch', l: 0.9, c: 0, h: 0 }; // Lv2 Base
+  const black: OklchColor = { mode: 'oklch', l: 0.12, c: 0, h: 0 }; // contrast
+  const white: OklchColor = { mode: 'oklch', l: 1, c: 0, h: 0 }; // white
+  const gray: OklchColor = { mode: 'oklch', l: 0.93, c: 0, h: 0 }; // light2
 
   const wcagBlack = calculateWCAG(color, black);
   const wcagWhite = calculateWCAG(color, white);

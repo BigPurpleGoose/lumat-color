@@ -34,7 +34,12 @@ export const AccessibilityToolbar: React.FC = () => {
     accessibilitySettings,
     updateAccessibilitySettings,
     setSelectedBackground,
+    globalSettings,
   } = useAppStore();
+
+  // Use custom background presets from global settings if available
+  const backgroundPresets =
+    globalSettings.backgroundPresets || BACKGROUND_PRESETS;
 
   // Handle preset selection
   const handlePresetChange = (presetKey: string) => {
@@ -68,7 +73,7 @@ export const AccessibilityToolbar: React.FC = () => {
   const handleBackgroundChange = (bgName: string) => {
     updateAccessibilitySettings({ targetBackground: bgName });
     // Sync with the selectedBackground used by other components
-    const preset = BACKGROUND_PRESETS.find((p) => p.name === bgName);
+    const preset = backgroundPresets.find((p) => p.name === bgName);
     if (preset) {
       setSelectedBackground(preset.color);
     }
@@ -244,26 +249,28 @@ export const AccessibilityToolbar: React.FC = () => {
             <Select.Content>
               <Select.Group>
                 <Select.Label>Light Backgrounds</Select.Label>
-                <Select.Item value="canvas-bg">Canvas BG (L100)</Select.Item>
-                <Select.Item value="canvas-bg-lv1">
-                  Canvas BG Lv1 (L98)
-                </Select.Item>
-                <Select.Item value="canvas-bg-lv2">
-                  Canvas BG Lv2 (L90)
-                </Select.Item>
+                {backgroundPresets
+                  .filter((p) => p.lightness >= 50)
+                  .map((preset) => (
+                    <Select.Item key={preset.name} value={preset.name}>
+                      {preset.name.charAt(0).toUpperCase() +
+                        preset.name.slice(1).replace(/([0-9])/g, " $1")}{" "}
+                      (L{preset.lightness})
+                    </Select.Item>
+                  ))}
               </Select.Group>
               <Select.Separator />
               <Select.Group>
-                <Select.Label>Dark Backgrounds (Emphasized)</Select.Label>
-                <Select.Item value="canvas-bg-lv2 (E)">
-                  Canvas BG Lv2 (E) - L26
-                </Select.Item>
-                <Select.Item value="canvas-bg-lv1 (E)">
-                  Canvas BG Lv1 (E) - L20
-                </Select.Item>
-                <Select.Item value="canvas-bg (E)">
-                  Canvas BG (E) - L14
-                </Select.Item>
+                <Select.Label>Dark Backgrounds</Select.Label>
+                {backgroundPresets
+                  .filter((p) => p.lightness < 50)
+                  .map((preset) => (
+                    <Select.Item key={preset.name} value={preset.name}>
+                      {preset.name.charAt(0).toUpperCase() +
+                        preset.name.slice(1).replace(/([0-9])/g, " $1")}{" "}
+                      (L{preset.lightness})
+                    </Select.Item>
+                  ))}
               </Select.Group>
             </Select.Content>
           </Select.Root>
